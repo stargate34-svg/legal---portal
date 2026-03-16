@@ -4,7 +4,6 @@ import streamlit as st
 st.set_page_config(page_title="Representation Portal", layout="centered")
 
 # --- DATA: Attorney Specifics ---
-# These are pulled from your uploaded PDF contracts
 attorney_data = {
     "Kylee Nizuryn": {
         "fee_text": "The Attorney shall receive one-third (1/3) of the total gross amount of recovery. In the event of no recovery, Client shall owe Attorney nothing for services rendered.",
@@ -21,8 +20,12 @@ attorney_data = {
 }
 
 # --- NAVIGATION ---
-# In a live app, you'd send the client a link that automatically selects "Client Mode"
-app_mode = st.sidebar.radio("Navigation", ["Marketer: Generate Link", "Client: Sign Form"])
+# Check if a firm is already selected in the URL (for the Client side)
+query_params = st.query_params
+if "firm" in query_params:
+    app_mode = "Client: Sign Form"
+else:
+    app_mode = st.sidebar.radio("Navigation", ["Marketer: Generate Link", "Client: Sign Form"])
 
 # ---------------------------------------------------------
 # MODE 1: MARKETER GENERATES THE LINK
@@ -33,8 +36,8 @@ if app_mode == "Marketer: Generate Link":
     
     selected_atty = st.selectbox("Assigning Attorney", list(attorney_data.keys()))
     
-    # Generate the link (Replace 'your-app.streamlit.app' with your actual URL once deployed)
-    base_url = "https://your-app.streamlit.app/"
+    # YOUR ACTUAL URL IS NOW CONNECTED BELOW
+    base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
     final_link = base_url + query_param
     
@@ -46,10 +49,12 @@ if app_mode == "Marketer: Generate Link":
 # MODE 2: CLIENT FILLS OUT THE FORM
 # ---------------------------------------------------------
 elif app_mode == "Client: Sign Form":
-    # Logic to auto-select the firm based on the link (if applicable)
-    query_params = st.query_params
     default_firm = query_params.get("firm", "Kylee Nizuryn").replace("+", " ")
     
+    # Check if the firm exists in our data to avoid errors
+    if default_firm not in attorney_data:
+        default_firm = "Kylee Nizuryn"
+
     st.title("Request for Representation")
     st.write(f"Form for: **{default_firm}**")
     
@@ -59,7 +64,6 @@ elif app_mode == "Client: Sign Form":
     st.subheader("Your Information")
     c_name = st.text_input("Full Name")
     
-    # Only show SSN/DOB if the specific attorney requires it
     if attorney_data[default_firm]["needs_ssn"]:
         col1, col2 = st.columns(2)
         with col1:
