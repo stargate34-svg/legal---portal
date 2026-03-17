@@ -7,7 +7,7 @@ st.set_page_config(page_title="Representation Portal", layout="centered")
 
 # --- DATA: Professional Attorney Agreements ---
 attorney_data = {
-    "Kylee Nizuryn": {
+    "Ralls Attorney Intake Form": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 The Attorney shall receive one-third (1/3) of the total gross amount of recovery. 
 In the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
@@ -42,14 +42,14 @@ def send_notification(firm_name, client_name, client_phone, client_email, dob, s
         body = f"""
 NEW REPRESENTATION REQUEST SIGNED
 
-Attorney: {firm_name}
+Attorney/Form: {firm_name}
 Client Name: {client_name}
 Client Phone: {client_phone}
 Client Email: {client_email}
 Date of Birth: {dob if dob else 'N/A'}
 Last 4 SSN: {ssn if ssn else 'N/A'}
 
-The client has electronically signed the fee agreement for your firm.
+The client has electronically signed the fee agreement for this intake.
         """
         
         msg = MIMEMultipart()
@@ -70,11 +70,11 @@ The client has electronically signed the fee agreement for your firm.
 
 # --- NAVIGATION & ERROR HANDLING ---
 query_params = st.query_params
-firm_param = query_params.get("firm", "Kylee Nizuryn").replace("+", " ")
+firm_param = query_params.get("firm", "Ralls Attorney Intake Form").replace("+", " ")
 
-# Safety Check: If the firm in the link doesn't exist, default to Kylee
+# Safety Check: If the firm in the link doesn't exist, default to Ralls
 if firm_param not in attorney_data:
-    firm_param = "Kylee Nizuryn"
+    firm_param = "Ralls Attorney Intake Form"
 
 if "firm" in query_params:
     app_mode = "Client: Sign Form"
@@ -84,7 +84,8 @@ else:
 # --- MODE 1: MARKETER ---
 if app_mode == "Marketer: Generate Link":
     st.title("Marketer Dispatch")
-    selected_atty = st.selectbox("Assigning Attorney", list(attorney_data.keys()))
+    selected_atty = st.selectbox("Assigning Intake Form", list(attorney_data.keys()))
+    # Updated Base URL
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
     st.info(f"Send this link to the client for {selected_atty}:")
@@ -101,7 +102,6 @@ elif app_mode == "Client: Sign Form":
     c_phone = st.text_input("Phone Number")
     c_email = st.text_input("Email Address")
     
-    # Optional fields based on attorney requirements
     c_dob = ""
     c_ssn = ""
     if attorney_data[firm_param]["needs_extra"]:
@@ -112,7 +112,7 @@ elif app_mode == "Client: Sign Form":
             c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
     
     st.subheader("Electronic Signature")
-    st.write(f"By signing below, I am requesting that {firm_param} represent me regarding my accident.")
+    st.write(f"By signing below, I am requesting representation via the {firm_param}.")
     signature = st.text_input("Type Full Name to Sign")
     
     if st.button("Submit Signed Request"):
@@ -123,6 +123,6 @@ elif app_mode == "Client: Sign Form":
                     attorney_data[firm_param]["target_email"]
                 )
                 if success:
-                    st.success(f"Thank you. Your request has been sent to {firm_param}.")
+                    st.success(f"Thank you. Your request has been sent via the {firm_param}.")
         else:
             st.error("Please fill in your name, phone, and signature.")
