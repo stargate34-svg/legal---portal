@@ -99,11 +99,21 @@ if app_mode == "Marketer: Generate Link":
     st.write(f"Generating secure link for: **{office['full_name']}**")
     
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
-    # Now the link is super clean: ?f=mckenzie
     final_link = f"{base_url}?f={office_key}"
     
     st.info("Client Access Link (Copy This):")
     st.code(final_link, language=None)
+    
+    # Add a reliable copy button using st.components.v1.html
+    copy_html = f"""
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
+        <button onclick="navigator.clipboard.writeText('{final_link}').then(() => alert('Link copied to clipboard!')).catch(() => alert('Failed to copy.'))" 
+                style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 8px;">
+            📋 Copy Link to Clipboard
+        </button>
+    </div>
+    """
+    st.components.v1.html(copy_html, height=80)
 
 # --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
