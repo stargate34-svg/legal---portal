@@ -44,22 +44,7 @@ if office_key not in attorney_data:
 # Get the full data for the active office
 office = attorney_data[office_key]
 
-# --- 2. DYNAMIC HEADER ---
-st.markdown(
-    f"""
-    <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
-        <span style="font-size: 34px; color: {office['color']}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-            ⚖️ {office['full_name']}
-        </span>
-        <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
-            Professional Legal Services
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# --- 3. APP MODES ---
+# --- 2. APP MODES ---
 if "f" in query_params:
     app_mode = "Client: Sign Form"
 else:
@@ -77,6 +62,36 @@ else:
             if v["full_name"] == selected_display:
                 office_key = k
                 office = v
+
+# --- 3. DYNAMIC HEADER BASED ON MODE ---
+if app_mode == "Client: Sign Form":
+    st.markdown(
+        f"""
+        <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+            <span style="font-size: 34px; color: {office['color']}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+                ⚖️ {office['full_name']}
+            </span>
+            <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
+                Professional Legal Services
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+elif app_mode == "Marketer: Generate Link":
+    st.markdown(
+        f"""
+        <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid #888888; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+            <span style="font-size: 34px; color: #888888; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+                ⚖️ Legal Representations Portal
+            </span>
+            <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
+                Marketer Access
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # --- 4. MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
