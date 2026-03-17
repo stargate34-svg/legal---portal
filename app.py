@@ -29,31 +29,26 @@ attorney_data = {
     }
 }
 
-# --- 1. READ URL AND DETERMINE THE APP MODE FIRST ---
+# --- 1. READ URL AND DETERMINE THE APP MODE ---
 query_params = st.query_params
 raw_firm = query_params.get("firm", "")
-# Clean up the URL formatting just in case
 url_firm = urllib.parse.unquote(raw_firm).replace("+", " ")
 
-# If the link has a valid firm in it, lock into Client Mode
 if "firm" in query_params and url_firm in attorney_data:
     app_mode = "Client: Sign Form"
     active_firm = url_firm
 else:
-    # Otherwise, open the Marketer Navigation in the sidebar
     st.sidebar.title("Navigation")
     app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
     
     if app_mode == "Marketer: Generate Link":
-        # The header will now instantly update to match this dropdown!
-        active_firm = st.sidebar.selectbox("Preview & Generate Link For:", list(attorney_data.keys()))
+        active_firm = st.sidebar.selectbox("Select Office:", list(attorney_data.keys()))
     else:
-        active_firm = "Ralls Legal Representation" # Fallback for testing
+        active_firm = "Ralls Legal Representation"
 
 office_info = attorney_data[active_firm]
 
 # --- 2. DRAW THE DYNAMIC HEADER ---
-# Because this is drawn AFTER the active_firm is set above, it will always match.
 st.markdown(
     f"""
     <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office_info['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
@@ -68,20 +63,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 3. DRAW THE REST OF THE PAGE ---
+# --- 3. DRAW THE CONTENT ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
-    st.write(f"You are currently previewing the page for **{active_firm}**.")
+    st.write(f"Generating secure link for: **{active_firm}**")
     
-    # Generate the safe link
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     safe_link_name = active_firm.replace(' ', '+')
     final_link = f"{base_url}?firm={safe_link_name}"
     
-    st.info("Copy the link below to send to the client:")
+    st.info("Client Access Link:")
     st.code(final_link, language=None)
-    
-    st.warning("☝️ To test this link yourself, copy it and paste it into a brand new browser tab.")
 
 elif app_mode == "Client: Sign Form":
     st.warning(office_info["fee_text"])
@@ -107,8 +99,7 @@ elif app_mode == "Client: Sign Form":
     
     if st.button("Submit Signed Request"):
         if signature and c_name and c_phone:
-            with st.spinner("Submitting to office..."):
-                # Email logic setup
+            with st.spinner("Submitting..."):
                 try:
                     sender_email = st.secrets["EMAIL_SENDER"]
                     sender_password = st.secrets["EMAIL_PASSWORD"]
