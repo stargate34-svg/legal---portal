@@ -4,9 +4,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import date
 
-st.set_page_config(page_title="Representation Portal", layout="centered")
+# Set up page config (This part is crucial for the overall "app" feel)
+st.set_page_config(
+    page_title="Ralls Representation Portal",
+    layout="centered",
+    page_icon="⚖️"
+)
 
-# --- DATA: Professional Attorney Agreements ---
+# --- DATA: Professional Attorney Agreements (Updated names as requested) ---
 attorney_data = {
     "Ralls Legal Representation": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
@@ -33,7 +38,7 @@ Lawyer is authorized to incur reasonable costs in the handling of this claim."""
     }
 }
 
-# --- EMAIL FUNCTION ---
+# --- EMAIL FUNCTION (Same as before) ---
 def send_notification(firm_name, client_name, client_phone, client_email, accident_date, dob, ssn, target_email):
     try:
         sender_email = st.secrets["EMAIL_SENDER"]
@@ -70,7 +75,23 @@ The client has electronically signed the fee agreement.
         st.error(f"Error sending email: {e}")
         return False
 
-# --- NAVIGATION & ERROR HANDLING ---
+# --- THE LOGO HEADER SECTION ---
+# This part "draws" the logo onto the page. You don't need a separate image file!
+st.markdown(
+    """
+    <div style="background-color: #1a1a1a; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px;">
+        <span style="font-size: 40px; color: #f2e1a3; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+            ⚖️ Ralls Representation Portal
+        </span>
+        <div style="font-size: 16px; color: #ffffff; font-family: Arial, sans-serif; margin-top: -5px;">
+            Secure Client Intake & Representation Authorization
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- NAVIGATION & ERROR HANDLING (Same as before) ---
 query_params = st.query_params
 firm_param = query_params.get("firm", "Ralls Legal Representation").replace("+", " ")
 
@@ -82,19 +103,18 @@ if "firm" in query_params:
 else:
     app_mode = st.sidebar.radio("Navigation", ["Marketer: Generate Link", "Client: Sign Form"])
 
-# --- MODE 1: MARKETER ---
+# --- MODE 1: MARKETER (Same as before) ---
 if app_mode == "Marketer: Generate Link":
-    st.title("Marketer Dispatch")
+    st.subheader("Marketer Dispatch")
     selected_atty = st.selectbox("Assigning Representation", list(attorney_data.keys()))
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
     st.info(f"Send this link to the client for {selected_atty}:")
     st.code(base_url + query_param, language=None)
 
-# --- MODE 2: CLIENT ---
+# --- MODE 2: CLIENT (Same as before, but title moved to header section) ---
 elif app_mode == "Client: Sign Form":
-    st.title("Request for Representation")
-    st.markdown(f"### {firm_param}")
+    st.markdown(f"### Authorization for {firm_param}")
     st.warning(attorney_data[firm_param]["fee_text"])
     
     st.subheader("Your Information")
