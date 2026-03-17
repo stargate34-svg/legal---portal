@@ -3,43 +3,54 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# Setup page config
 st.set_page_config(page_title="Representation Portal", layout="centered")
 
-# --- DATA: Attorney Specifics ---
+# --- DATA: Professional Attorney Agreements ---
 attorney_data = {
     "Kylee Nizuryn": {
-        "fee_text": "The Attorney shall receive one-third (1/3) of the total gross amount of recovery...",
-        "needs_ssn": False,
+        "fee_text": """**CONTINGENT FEE AGREEMENT**
+The Attorney shall receive one-third (1/3) of the total gross amount of recovery. 
+In the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
+        "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
     "Brian Duffy": {
-        "fee_text": "Contingency Fee: 25% (1/4) for out-of-court settlement...",
-        "needs_ssn": True,
+        "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
+Client agrees to pay Attorney a contingency fee of 25% (1/4) for any out-of-court settlement. 
+If litigation is pursued, the fee shall be 33% (1/3) of the gross recovery. 
+Client remains responsible for expenses and medical bills.""",
+        "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
     "McKenzie & Snyder": {
-        "fee_text": "Client agrees to pay Lawyer 25% of the gross amount...",
-        "needs_ssn": True,
+        "fee_text": """**CONTINGENT FEE AGREEMENT**
+Client agrees to pay Lawyer 25% of the gross amount of the recovery. 
+If nothing is recovered, Lawyer shall receive no compensation. 
+Lawyer is authorized to incur reasonable costs in the handling of this claim.""",
+        "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com"
     }
 }
 
 # --- EMAIL FUNCTION ---
-def send_notification(firm_name, client_name, client_phone, client_email, target_email):
+def send_notification(firm_name, client_name, client_phone, client_email, dob, ssn, target_email):
     try:
         sender_email = st.secrets["EMAIL_SENDER"]
         sender_password = st.secrets["EMAIL_PASSWORD"]
         
         subject = f"NEW SIGNED REQUEST: {client_name} for {firm_name}"
-        # FIX: Explicitly adding phone and email variables to the body
-        body = (
-            f"A new representation request has been signed.\n\n"
-            f"Attorney: {firm_name}\n"
-            f"Client Name: {client_name}\n"
-            f"Client Phone: {client_phone}\n"
-            f"Client Email: {client_email}\n"
-        )
+        body = f"""
+NEW REPRESENTATION REQUEST SIGNED
+
+Attorney: {firm_name}
+Client Name: {client_name}
+Client Phone: {client_phone}
+Client Email: {client_email}
+Date of Birth: {dob if dob else 'N/A'}
+Last 4 SSN: {ssn if ssn else 'N/A'}
+
+The client has electronically signed the fee agreement for your firm.
+        """
         
         msg = MIMEMultipart()
         msg['From'] = sender_email
@@ -57,8 +68,14 @@ def send_notification(firm_name, client_name, client_phone, client_email, target
         st.error(f"Error sending email: {e}")
         return False
 
-# --- NAVIGATION ---
+# --- NAVIGATION & ERROR HANDLING ---
 query_params = st.query_params
+firm_param = query_params.get("firm", "Kylee Nizuryn").replace("+", " ")
+
+# Safety Check: If the firm in the link doesn't exist, default to Kylee
+if firm_param not in attorney_data:
+    firm_param = "Kylee Nizuryn"
+
 if "firm" in query_params:
     app_mode = "Client: Sign Form"
 else:
@@ -70,33 +87,42 @@ if app_mode == "Marketer: Generate Link":
     selected_atty = st.selectbox("Assigning Attorney", list(attorney_data.keys()))
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
-    final_link = base_url + query_param
-    st.code(final_link, language=None)
+    st.info(f"Send this link to the client for {selected_atty}:")
+    st.code(base_url + query_param, language=None)
 
 # --- MODE 2: CLIENT ---
 elif app_mode == "Client: Sign Form":
-    default_firm = query_params.get("firm", "Kylee Nizuryn").replace("+", " ")
     st.title("Request for Representation")
-    st.warning(attorney_data[default_firm]["fee_text"])
+    st.markdown(f"### {firm_param}")
+    st.warning(attorney_data[firm_param]["fee_text"])
     
+    st.subheader("Your Information")
     c_name = st.text_input("Full Name")
-    # These variables now match the send_notification function correctly
     c_phone = st.text_input("Phone Number")
     c_email = st.text_input("Email Address")
+    
+    # Optional fields based on attorney requirements
+    c_dob = ""
+    c_ssn = ""
+    if attorney_data[firm_param]["needs_extra"]:
+        col1, col2 = st.columns(2)
+        with col1:
+            c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
+        with col2:
+            c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
+    
+    st.subheader("Electronic Signature")
+    st.write(f"By signing below, I am requesting that {firm_param} represent me regarding my accident.")
     signature = st.text_input("Type Full Name to Sign")
     
     if st.button("Submit Signed Request"):
         if signature and c_name and c_phone:
-            with st.spinner("Sending to attorney..."):
-                # Sending all variables to the function
+            with st.spinner("Submitting..."):
                 success = send_notification(
-                    default_firm, 
-                    c_name, 
-                    c_phone, 
-                    c_email, 
-                    attorney_data[default_firm]["target_email"]
+                    firm_param, c_name, c_phone, c_email, c_dob, c_ssn, 
+                    attorney_data[firm_param]["target_email"]
                 )
                 if success:
-                    st.success(f"Thank you, {c_name}. Your request has been sent.")
+                    st.success(f"Thank you. Your request has been sent to {firm_param}.")
         else:
-            st.error("Please provide your name, phone, and signature.")
+            st.error("Please fill in your name, phone, and signature.")
