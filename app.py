@@ -6,8 +6,7 @@ from datetime import date
 
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
-# --- DATA: Mapped to Short Keys for reliability ---
-# We use short "slugs" (ralls, ohio, mckenzie) for the URL
+# --- DATA: Professional Mapping ---
 attorney_data = {
     "ralls": {
         "full_name": "Ralls Legal Representation",
@@ -34,14 +33,11 @@ attorney_data = {
 
 # --- 1. DETECTION LOGIC ---
 query_params = st.query_params
-# We look for '?f=' in the URL
 office_key = query_params.get("f", "ralls").lower()
 
-# Safety fallback: If key isn't found, default to ralls
 if office_key not in attorney_data:
     office_key = "ralls"
 
-# Get the full data for the active office
 office = attorney_data[office_key]
 
 # --- 2. DYNAMIC HEADER ---
@@ -67,12 +63,10 @@ else:
     app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
     
     if app_mode == "Marketer: Generate Link":
-        # Let marketers pick by the full name
         selected_display = st.sidebar.selectbox(
             "Select Office:", 
             [attorney_data[k]["full_name"] for k in attorney_data]
         )
-        # Find the key that matches that display name
         for k, v in attorney_data.items():
             if v["full_name"] == selected_display:
                 office_key = k
@@ -81,14 +75,19 @@ else:
 # --- 4. MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
-    st.write(f"Generating secure link for: **{office['full_name']}**")
     
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
-    # Now the link is super clean: ?f=mckenzie
     final_link = f"{base_url}?f={office_key}"
     
-    st.info("Client Access Link (Copy This):")
+    # Visual Box for the Link
+    st.info(f"Secure link for {office['full_name']}:")
     st.code(final_link, language=None)
+    
+    # The New Copy Button
+    if st.button("📋 Copy Link to Clipboard"):
+        # This is a small hack to use the browser's clipboard
+        st.write(f'<script>navigator.clipboard.writeText("{final_link}");</script>', unsafe_allow_html=True)
+        st.success("Link copied! Ready to paste.")
 
 # --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
@@ -121,7 +120,19 @@ elif app_mode == "Client: Sign Form":
                     sender_password = st.secrets["EMAIL_PASSWORD"]
                     
                     subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
-                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}"
+                    body = f"""
+NEW REPRESENTATION REQUEST SIGNED
+
+Office: {office['full_name']}
+Client Name: {c_name}
+Client Phone: {c_phone}
+Client Email: {c_email}
+Date of Accident: {c_date_acc}
+Date of Birth: {c_dob if c_dob else 'N/A'}
+Last 4 SSN: {c_ssn if c_ssn else 'N/A'}
+
+The client has electronically signed the fee agreement for this office.
+                    """
                     
                     msg = MIMEMultipart()
                     msg['From'] = sender_email
@@ -129,13 +140,14 @@ elif app_mode == "Client: Sign Form":
                     msg['Subject'] = subject
                     msg.attach(MIMEText(body, 'plain'))
                     
-                    server = smtplib.SMTP('smtp.gmail.com', 587)
+                    server = stmplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
                     server.login(sender_email, sender_password)
                     server.send_message(msg)
                     server.quit()
-                    st.success(f"Sent successfully to {office['full_name']}.")
+                    
+                    st.success(f"Thank you, {c_name}. Your request has been sent to {office['full_name']}.")
                 except Exception as e:
                     st.error(f"Error: {e}")
         else:
-            st.error("Missing required fields.")
+            st.error("Please provide Name, Phone, and Signature.")
