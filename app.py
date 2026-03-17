@@ -3,18 +3,18 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-st.set_page_config(page_title="Representation Portal", layout="centered")
+st.set_page_config(page_title="Ralls Representation Portal", layout="centered")
 
 # --- DATA: Professional Attorney Agreements ---
 attorney_data = {
-    "Ralls Attorney Intake Form": {
+    "Ralls Legal Representation (Kylee)": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 The Attorney shall receive one-third (1/3) of the total gross amount of recovery. 
 In the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
-    "Brian Duffy": {
+    "Ralls Legal Representation (Duffy)": {
         "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
 Client agrees to pay Attorney a contingency fee of 25% (1/4) for any out-of-court settlement. 
 If litigation is pursued, the fee shall be 33% (1/3) of the gross recovery. 
@@ -22,7 +22,7 @@ Client remains responsible for expenses and medical bills.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
-    "McKenzie & Snyder": {
+    "Ralls Legal Representation (McKenzie)": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 Client agrees to pay Lawyer 25% of the gross amount of the recovery. 
 If nothing is recovered, Lawyer shall receive no compensation. 
@@ -38,18 +38,18 @@ def send_notification(firm_name, client_name, client_phone, client_email, dob, s
         sender_email = st.secrets["EMAIL_SENDER"]
         sender_password = st.secrets["EMAIL_PASSWORD"]
         
-        subject = f"NEW SIGNED REQUEST: {client_name} for {firm_name}"
+        subject = f"NEW SIGNED REQUEST: {client_name} - {firm_name}"
         body = f"""
 NEW REPRESENTATION REQUEST SIGNED
 
-Attorney/Form: {firm_name}
+Form Type: {firm_name}
 Client Name: {client_name}
 Client Phone: {client_phone}
 Client Email: {client_email}
 Date of Birth: {dob if dob else 'N/A'}
 Last 4 SSN: {ssn if ssn else 'N/A'}
 
-The client has electronically signed the fee agreement for this intake.
+The client has electronically signed the fee agreement.
         """
         
         msg = MIMEMultipart()
@@ -70,11 +70,11 @@ The client has electronically signed the fee agreement for this intake.
 
 # --- NAVIGATION & ERROR HANDLING ---
 query_params = st.query_params
-firm_param = query_params.get("firm", "Ralls Attorney Intake Form").replace("+", " ")
+# Default to Kylee's version if the link is broken
+firm_param = query_params.get("firm", "Ralls Legal Representation (Kylee)").replace("+", " ")
 
-# Safety Check: If the firm in the link doesn't exist, default to Ralls
 if firm_param not in attorney_data:
-    firm_param = "Ralls Attorney Intake Form"
+    firm_param = "Ralls Legal Representation (Kylee)"
 
 if "firm" in query_params:
     app_mode = "Client: Sign Form"
@@ -84,8 +84,7 @@ else:
 # --- MODE 1: MARKETER ---
 if app_mode == "Marketer: Generate Link":
     st.title("Marketer Dispatch")
-    selected_atty = st.selectbox("Assigning Intake Form", list(attorney_data.keys()))
-    # Updated Base URL
+    selected_atty = st.selectbox("Assigning Representation", list(attorney_data.keys()))
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
     st.info(f"Send this link to the client for {selected_atty}:")
@@ -112,7 +111,7 @@ elif app_mode == "Client: Sign Form":
             c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
     
     st.subheader("Electronic Signature")
-    st.write(f"By signing below, I am requesting representation via the {firm_param}.")
+    st.write(f"By signing below, I am requesting representation via {firm_param}.")
     signature = st.text_input("Type Full Name to Sign")
     
     if st.button("Submit Signed Request"):
@@ -123,6 +122,6 @@ elif app_mode == "Client: Sign Form":
                     attorney_data[firm_param]["target_email"]
                 )
                 if success:
-                    st.success(f"Thank you. Your request has been sent via the {firm_param}.")
+                    st.success(f"Thank you. Your request has been sent.")
         else:
             st.error("Please fill in your name, phone, and signature.")
