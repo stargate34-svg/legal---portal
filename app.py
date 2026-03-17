@@ -2,19 +2,20 @@ import streamlit as st
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from datetime import date
 
-st.set_page_config(page_title="Ralls Representation Portal", layout="centered")
+st.set_page_config(page_title="Representation Portal", layout="centered")
 
 # --- DATA: Professional Attorney Agreements ---
 attorney_data = {
-    "Ralls Legal Representation (Kylee)": {
+    "Ralls Legal Representation": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 The Attorney shall receive one-third (1/3) of the total gross amount of recovery. 
 In the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
-    "Ralls Legal Representation (Duffy)": {
+    "Brian Duffy Legal Representation": {
         "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
 Client agrees to pay Attorney a contingency fee of 25% (1/4) for any out-of-court settlement. 
 If litigation is pursued, the fee shall be 33% (1/3) of the gross recovery. 
@@ -22,7 +23,7 @@ Client remains responsible for expenses and medical bills.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com"
     },
-    "Ralls Legal Representation (McKenzie)": {
+    "Mckenzie & Snyder Legal Representation": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 Client agrees to pay Lawyer 25% of the gross amount of the recovery. 
 If nothing is recovered, Lawyer shall receive no compensation. 
@@ -33,7 +34,7 @@ Lawyer is authorized to incur reasonable costs in the handling of this claim."""
 }
 
 # --- EMAIL FUNCTION ---
-def send_notification(firm_name, client_name, client_phone, client_email, dob, ssn, target_email):
+def send_notification(firm_name, client_name, client_phone, client_email, accident_date, dob, ssn, target_email):
     try:
         sender_email = st.secrets["EMAIL_SENDER"]
         sender_password = st.secrets["EMAIL_PASSWORD"]
@@ -46,6 +47,7 @@ Form Type: {firm_name}
 Client Name: {client_name}
 Client Phone: {client_phone}
 Client Email: {client_email}
+Date of Accident: {accident_date}
 Date of Birth: {dob if dob else 'N/A'}
 Last 4 SSN: {ssn if ssn else 'N/A'}
 
@@ -70,11 +72,10 @@ The client has electronically signed the fee agreement.
 
 # --- NAVIGATION & ERROR HANDLING ---
 query_params = st.query_params
-# Default to Kylee's version if the link is broken
-firm_param = query_params.get("firm", "Ralls Legal Representation (Kylee)").replace("+", " ")
+firm_param = query_params.get("firm", "Ralls Legal Representation").replace("+", " ")
 
 if firm_param not in attorney_data:
-    firm_param = "Ralls Legal Representation (Kylee)"
+    firm_param = "Ralls Legal Representation"
 
 if "firm" in query_params:
     app_mode = "Client: Sign Form"
@@ -98,6 +99,7 @@ elif app_mode == "Client: Sign Form":
     
     st.subheader("Your Information")
     c_name = st.text_input("Full Name")
+    c_date_acc = st.date_input("Date of Accident", value=date.today())
     c_phone = st.text_input("Phone Number")
     c_email = st.text_input("Email Address")
     
@@ -118,7 +120,7 @@ elif app_mode == "Client: Sign Form":
         if signature and c_name and c_phone:
             with st.spinner("Submitting..."):
                 success = send_notification(
-                    firm_param, c_name, c_phone, c_email, c_dob, c_ssn, 
+                    firm_param, c_name, c_phone, c_email, c_date_acc, c_dob, c_ssn, 
                     attorney_data[firm_param]["target_email"]
                 )
                 if success:
