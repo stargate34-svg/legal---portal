@@ -4,21 +4,22 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import date
 
-# Set up page config (This part is crucial for the overall "app" feel)
+# Set up page config
 st.set_page_config(
-    page_title="Ralls Representation Portal",
+    page_title="Representation Portal",
     layout="centered",
     page_icon="⚖️"
 )
 
-# --- DATA: Professional Attorney Agreements (Updated names as requested) ---
+# --- DATA: Professional Attorney Agreements ---
 attorney_data = {
     "Ralls Legal Representation": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
 The Attorney shall receive one-third (1/3) of the total gross amount of recovery. 
 In the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
         "needs_extra": False,
-        "target_email": "tgottardi@advanced-spinal-care.com"
+        "target_email": "tgottardi@advanced-spinal-care.com",
+        "color": "#f2e1a3" # Gold accent
     },
     "Brian Duffy Legal Representation": {
         "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
@@ -26,7 +27,8 @@ Client agrees to pay Attorney a contingency fee of 25% (1/4) for any out-of-cour
 If litigation is pursued, the fee shall be 33% (1/3) of the gross recovery. 
 Client remains responsible for expenses and medical bills.""",
         "needs_extra": True,
-        "target_email": "tgottardi@advanced-spinal-care.com"
+        "target_email": "tgottardi@advanced-spinal-care.com",
+        "color": "#a3c2f2" # Blue accent
     },
     "Mckenzie & Snyder Legal Representation": {
         "fee_text": """**CONTINGENT FEE AGREEMENT**
@@ -34,11 +36,12 @@ Client agrees to pay Lawyer 25% of the gross amount of the recovery.
 If nothing is recovered, Lawyer shall receive no compensation. 
 Lawyer is authorized to incur reasonable costs in the handling of this claim.""",
         "needs_extra": True,
-        "target_email": "tgottardi@advanced-spinal-care.com"
+        "target_email": "tgottardi@advanced-spinal-care.com",
+        "color": "#a3f2b5" # Green accent
     }
 }
 
-# --- EMAIL FUNCTION (Same as before) ---
+# --- EMAIL FUNCTION ---
 def send_notification(firm_name, client_name, client_phone, client_email, accident_date, dob, ssn, target_email):
     try:
         sender_email = st.secrets["EMAIL_SENDER"]
@@ -48,7 +51,7 @@ def send_notification(firm_name, client_name, client_phone, client_email, accide
         body = f"""
 NEW REPRESENTATION REQUEST SIGNED
 
-Form Type: {firm_name}
+Office: {firm_name}
 Client Name: {client_name}
 Client Phone: {client_phone}
 Client Email: {client_email}
@@ -56,7 +59,7 @@ Date of Accident: {accident_date}
 Date of Birth: {dob if dob else 'N/A'}
 Last 4 SSN: {ssn if ssn else 'N/A'}
 
-The client has electronically signed the fee agreement.
+The client has electronically signed the fee agreement for this specific office.
         """
         
         msg = MIMEMultipart()
@@ -75,49 +78,49 @@ The client has electronically signed the fee agreement.
         st.error(f"Error sending email: {e}")
         return False
 
-# --- THE LOGO HEADER SECTION ---
-# This part "draws" the logo onto the page. You don't need a separate image file!
-st.markdown(
-    """
-    <div style="background-color: #1a1a1a; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 25px;">
-        <span style="font-size: 40px; color: #f2e1a3; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-            ⚖️ Ralls Representation Portal
-        </span>
-        <div style="font-size: 16px; color: #ffffff; font-family: Arial, sans-serif; margin-top: -5px;">
-            Secure Client Intake & Representation Authorization
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# --- NAVIGATION & ERROR HANDLING (Same as before) ---
+# --- DYNAMIC HEADER LOGIC ---
 query_params = st.query_params
 firm_param = query_params.get("firm", "Ralls Legal Representation").replace("+", " ")
 
 if firm_param not in attorney_data:
     firm_param = "Ralls Legal Representation"
 
+# Custom Logo Header based on the Office
+office_color = attorney_data[firm_param]["color"]
+st.markdown(
+    f"""
+    <div style="background-color: #1a1a1a; padding: 25px; border-radius: 10px; text-align: center; border-bottom: 5px solid {office_color}; margin-bottom: 30px;">
+        <span style="font-size: 32px; color: {office_color}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+            ⚖️ {firm_param}
+        </span>
+        <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;">
+            Professional Legal Services
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- NAVIGATION ---
 if "firm" in query_params:
     app_mode = "Client: Sign Form"
 else:
     app_mode = st.sidebar.radio("Navigation", ["Marketer: Generate Link", "Client: Sign Form"])
 
-# --- MODE 1: MARKETER (Same as before) ---
+# --- MODE 1: MARKETER ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
-    selected_atty = st.selectbox("Assigning Representation", list(attorney_data.keys()))
+    selected_atty = st.selectbox("Select Office to Generate Link", list(attorney_data.keys()))
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     query_param = f"?firm={selected_atty.replace(' ', '+')}"
-    st.info(f"Send this link to the client for {selected_atty}:")
+    st.info(f"Link for {selected_atty}:")
     st.code(base_url + query_param, language=None)
 
-# --- MODE 2: CLIENT (Same as before, but title moved to header section) ---
+# --- MODE 2: CLIENT ---
 elif app_mode == "Client: Sign Form":
-    st.markdown(f"### Authorization for {firm_param}")
     st.warning(attorney_data[firm_param]["fee_text"])
     
-    st.subheader("Your Information")
+    st.subheader("Client Information")
     c_name = st.text_input("Full Name")
     c_date_acc = st.date_input("Date of Accident", value=date.today())
     c_phone = st.text_input("Phone Number")
@@ -133,17 +136,17 @@ elif app_mode == "Client: Sign Form":
             c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
     
     st.subheader("Electronic Signature")
-    st.write(f"By signing below, I am requesting representation via {firm_param}.")
+    st.write(f"I hereby authorize {firm_param} to represent me.")
     signature = st.text_input("Type Full Name to Sign")
     
     if st.button("Submit Signed Request"):
         if signature and c_name and c_phone:
-            with st.spinner("Submitting..."):
+            with st.spinner("Processing..."):
                 success = send_notification(
                     firm_param, c_name, c_phone, c_email, c_date_acc, c_dob, c_ssn, 
                     attorney_data[firm_param]["target_email"]
                 )
                 if success:
-                    st.success(f"Thank you. Your request has been sent.")
+                    st.success(f"Form submitted successfully to {firm_param}.")
         else:
-            st.error("Please fill in your name, phone, and signature.")
+            st.error("Missing required fields: Name, Phone, or Signature.")
