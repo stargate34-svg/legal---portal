@@ -3,25 +3,28 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import date
-import urllib.parse
 
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
-# --- DATA: Individualized Branding for each Office ---
+# --- DATA: Mapped to Short Keys for reliability ---
+# We use short "slugs" (ralls, ohio, mckenzie) for the URL
 attorney_data = {
-    "Ralls Legal Representation": {
+    "ralls": {
+        "full_name": "Ralls Legal Representation",
         "fee_text": "**CONTINGENT FEE AGREEMENT**\nThe Attorney shall receive one-third (1/3) of the total gross amount of recovery.",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#f2e1a3" # Gold
     },
-    "Ohio Injury Attorneys": {
+    "ohio": {
+        "full_name": "Ohio Injury Attorneys",
         "fee_text": "**AUTHORITY TO REPRESENT AND FEE AGREEMENT**\nContingency fee of 25% for out-of-court and 33% for litigation.",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3c2f2" # Blue
     },
-    "Mckenzie & Snyder Legal Representation": {
+    "mckenzie": {
+        "full_name": "Mckenzie & Snyder Legal Representation",
         "fee_text": "**CONTINGENT FEE AGREEMENT**\nClient agrees to pay Lawyer 25% of the gross recovery.",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
@@ -29,31 +32,24 @@ attorney_data = {
     }
 }
 
-# --- 1. READ URL AND DETERMINE THE APP MODE ---
+# --- 1. DETECTION LOGIC ---
 query_params = st.query_params
-raw_firm = query_params.get("firm", "")
-url_firm = urllib.parse.unquote(raw_firm).replace("+", " ")
+# We look for '?f=' in the URL
+office_key = query_params.get("f", "ralls").lower()
 
-if "firm" in query_params and url_firm in attorney_data:
-    app_mode = "Client: Sign Form"
-    active_firm = url_firm
-else:
-    st.sidebar.title("Navigation")
-    app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
-    
-    if app_mode == "Marketer: Generate Link":
-        active_firm = st.sidebar.selectbox("Select Office:", list(attorney_data.keys()))
-    else:
-        active_firm = "Ralls Legal Representation"
+# Safety fallback: If key isn't found, default to ralls
+if office_key not in attorney_data:
+    office_key = "ralls"
 
-office_info = attorney_data[active_firm]
+# Get the full data for the active office
+office = attorney_data[office_key]
 
-# --- 2. DRAW THE DYNAMIC HEADER ---
+# --- 2. DYNAMIC HEADER ---
 st.markdown(
     f"""
-    <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office_info['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
-        <span style="font-size: 34px; color: {office_info['color']}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-            ⚖️ {active_firm}
+    <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+        <span style="font-size: 34px; color: {office['color']}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+            ⚖️ {office['full_name']}
         </span>
         <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
             Professional Legal Services
@@ -63,20 +59,40 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 3. DRAW THE CONTENT ---
+# --- 3. APP MODES ---
+if "f" in query_params:
+    app_mode = "Client: Sign Form"
+else:
+    st.sidebar.title("Navigation")
+    app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
+    
+    if app_mode == "Marketer: Generate Link":
+        # Let marketers pick by the full name
+        selected_display = st.sidebar.selectbox(
+            "Select Office:", 
+            [attorney_data[k]["full_name"] for k in attorney_data]
+        )
+        # Find the key that matches that display name
+        for k, v in attorney_data.items():
+            if v["full_name"] == selected_display:
+                office_key = k
+                office = v
+
+# --- 4. MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
-    st.write(f"Generating secure link for: **{active_firm}**")
+    st.write(f"Generating secure link for: **{office['full_name']}**")
     
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
-    safe_link_name = active_firm.replace(' ', '+')
-    final_link = f"{base_url}?firm={safe_link_name}"
+    # Now the link is super clean: ?f=mckenzie
+    final_link = f"{base_url}?f={office_key}"
     
-    st.info("Client Access Link:")
+    st.info("Client Access Link (Copy This):")
     st.code(final_link, language=None)
 
+# --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
-    st.warning(office_info["fee_text"])
+    st.warning(office["fee_text"])
     
     st.subheader("Incident & Contact Details")
     c_name = st.text_input("Full Name")
@@ -86,7 +102,7 @@ elif app_mode == "Client: Sign Form":
     
     c_dob = ""
     c_ssn = ""
-    if office_info["needs_extra"]:
+    if office["needs_extra"]:
         col1, col2 = st.columns(2)
         with col1:
             c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
@@ -94,7 +110,7 @@ elif app_mode == "Client: Sign Form":
             c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
     
     st.subheader("Representation Authorization")
-    st.write(f"By signing below, I authorize **{active_firm}** to represent me regarding my claims.")
+    st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
     signature = st.text_input("Type Full Name to Sign")
     
     if st.button("Submit Signed Request"):
@@ -104,24 +120,12 @@ elif app_mode == "Client: Sign Form":
                     sender_email = st.secrets["EMAIL_SENDER"]
                     sender_password = st.secrets["EMAIL_PASSWORD"]
                     
-                    subject = f"NEW SIGNED REQUEST: {c_name} - {active_firm}"
-                    body = f"""
-NEW REPRESENTATION REQUEST SIGNED
-
-Office: {active_firm}
-Client Name: {c_name}
-Client Phone: {c_phone}
-Client Email: {c_email}
-Date of Accident: {c_date_acc}
-Date of Birth: {c_dob if c_dob else 'N/A'}
-Last 4 SSN: {c_ssn if c_ssn else 'N/A'}
-
-The client has electronically signed the fee agreement for this office.
-                    """
+                    subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
+                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}"
                     
                     msg = MIMEMultipart()
                     msg['From'] = sender_email
-                    msg['To'] = office_info["target_email"]
+                    msg['To'] = office["target_email"]
                     msg['Subject'] = subject
                     msg.attach(MIMEText(body, 'plain'))
                     
@@ -130,9 +134,8 @@ The client has electronically signed the fee agreement for this office.
                     server.login(sender_email, sender_password)
                     server.send_message(msg)
                     server.quit()
-                    
-                    st.success(f"Thank you, {c_name}. Your request has been sent to {active_firm}.")
+                    st.success(f"Sent successfully to {office['full_name']}.")
                 except Exception as e:
-                    st.error(f"Error sending email: {e}")
+                    st.error(f"Error: {e}")
         else:
-            st.error("Please provide your Name, Phone, and Signature.")
+            st.error("Missing required fields.")
