@@ -93,17 +93,31 @@ elif app_mode == "Marketer: Generate Link":
         unsafe_allow_html=True,
     )
 
-# --- 4. MARKETER DISPATCH ---
+# --- 4. MARKETER DISPATCH (with Copy Button) ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
     st.write(f"Generating secure link for: **{office['full_name']}**")
     
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
-    # Now the link is super clean: ?f=mckenzie
     final_link = f"{base_url}?f={office_key}"
     
-    st.info("Client Access Link (Copy This):")
+    st.info("Client Access Link:")
+    
+    # Display the link in a code block (already has a small copy icon)
     st.code(final_link, language=None)
+    
+    # Add a prominent "Copy Link" button using HTML/JavaScript
+    copy_button_html = f"""
+    <div style="display: flex; justify-content: center; margin-top: 10px;">
+        <button 
+            onclick="navigator.clipboard.writeText('{final_link}').then(() => alert('Link copied to clipboard!')).catch(err => alert('Failed to copy.'))" 
+            style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 8px;">
+            📋 Copy Link to Clipboard
+        </button>
+    </div>
+    <p style="text-align: center; font-size: 12px; color: #888;">(Click the button above to copy the link)</p>
+    """
+    st.markdown(copy_button_html, unsafe_allow_html=True)
 
 # --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
