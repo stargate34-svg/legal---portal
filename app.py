@@ -6,39 +6,8 @@ from datetime import date
 
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
-# --- CUSTOM PROFESSIONAL STYLING ---
-st.markdown("""
-    <style>
-    .legal-document {
-        font-family: 'Times New Roman', Times, serif;
-        text-align: justify;
-        line-height: 1.6;
-        background-color: #ffffff;
-        color: #1a1a1a;
-        padding: 40px;
-        border: 1px solid #d3d3d3;
-        border-radius: 4px;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
-    }
-    .signature-box {
-        border: 2px solid #1a1a1a;
-        padding: 20px;
-        margin-top: 20px;
-        background-color: #f8f9fa;
-    }
-    .stButton>button {
-        width: 100%;
-        border-radius: 4px;
-        height: 3em;
-        background-color: #1a1a1a;
-        color: white;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- DATA: Mapped to Short Keys ---
-# Wording remains exactly as provided in your previous script
+# --- DATA: Mapped to Short Keys for reliability ---
+# We use short "slugs" (ralls, ohio, mckenzie) for the URL
 attorney_data = {
     "ralls": {
         "full_name": "Ralls Legal Representation",
@@ -97,11 +66,14 @@ The undersigned certify that they have read and understand this agreement.""",
 
 # --- 1. DETECTION LOGIC ---
 query_params = st.query_params
+# We look for '?f=' in the URL
 office_key = query_params.get("f", "ralls").lower()
 
+# Safety fallback: If key isn't found, default to ralls
 if office_key not in attorney_data:
     office_key = "ralls"
 
+# Get the full data for the active office
 office = attorney_data[office_key]
 
 # --- 2. APP MODES ---
@@ -112,35 +84,42 @@ else:
     app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
     
     if app_mode == "Marketer: Generate Link":
+        # Let marketers pick by the full name
         selected_display = st.sidebar.selectbox(
             "Select Office:", 
             [attorney_data[k]["full_name"] for k in attorney_data]
         )
+        # Find the key that matches that display name
         for k, v in attorney_data.items():
             if v["full_name"] == selected_display:
                 office_key = k
                 office = v
 
-# --- 3. DYNAMIC HEADER ---
+# --- 3. DYNAMIC HEADER BASED ON MODE ---
 if app_mode == "Client: Sign Form":
     st.markdown(
         f"""
-        <div style="background-color: #1a1a1a; padding: 30px; border-radius: 8px; text-align: center; border-bottom: 8px solid {office['color']}; margin-bottom: 40px;">
-            <div style="font-size: 12px; color: {office['color']}; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px;">Official Representation Portal</div>
-            <span style="font-size: 38px; color: #ffffff; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-                {office['full_name'].upper()}
+        <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid {office['color']}; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+            <span style="font-size: 34px; color: {office['color']}; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+                ⚖️ {office['full_name']}
             </span>
+            <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
+                Professional Legal Services
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-else:
+elif app_mode == "Marketer: Generate Link":
     st.markdown(
         f"""
-        <div style="background-color: #1a1a1a; padding: 30px; border-radius: 8px; text-align: center; border-bottom: 8px solid #888888; margin-bottom: 40px;">
-            <span style="font-size: 32px; color: #ffffff; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
-                ⚖️ Marketer Dispatch Console
+        <div style="background-color: #1a1a1a; padding: 25px; border-radius: 12px; text-align: center; border-bottom: 6px solid #888888; margin-bottom: 35px; box-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+            <span style="font-size: 34px; color: #888888; font-weight: bold; font-family: 'Times New Roman', Times, serif;">
+                ⚖️ Legal Representations Portal
             </span>
+            <div style="font-size: 14px; color: #ffffff; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; opacity: 0.8;">
+                Marketer Access
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -148,33 +127,43 @@ else:
 
 # --- 4. MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
-    st.subheader("Link Configuration")
-    st.write(f"Generating professional access link for: **{office['full_name']}**")
+    st.subheader("Marketer Dispatch")
+    st.write(f"Generating secure link for: **{office['full_name']}**")
     
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     final_link = f"{base_url}?f={office_key}"
     
-    st.info("Direct Client URL:")
+    st.info("Client Access Link (Copy This):")
     st.code(final_link, language=None)
     
+    # Copy button with visual feedback (depresses on click)
     copy_html = f"""
     <div style="display: flex; justify-content: center; margin-top: 10px;">
         <style>
             .copy-btn {{
-                background-color: #1a1a1a;
-                border: 1px solid #ffffff;
+                background-color: #4CAF50;
+                border: none;
                 color: white;
-                padding: 12px 30px;
+                padding: 10px 24px;
                 text-align: center;
-                font-size: 14px;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
                 cursor: pointer;
-                border-radius: 4px;
-                transition: 0.2s;
+                border-radius: 8px;
+                transition: all 0.1s ease;
             }}
-            .copy-btn:active {{ transform: scale(0.98); opacity: 0.8; }}
+            .copy-btn:hover {{
+                background-color: #45a049;
+            }}
+            .copy-btn:active {{
+                transform: scale(0.95);
+                background-color: #3d8b40;
+            }}
         </style>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('{final_link}')">
-            COPY LINK TO CLIPBOARD
+            📋 Copy Link to Clipboard
         </button>
     </div>
     """
@@ -182,59 +171,50 @@ if app_mode == "Marketer: Generate Link":
 
 # --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
-    # Styled Legal Agreement Container
-    st.markdown(f'<div class="legal-document">{office["fee_text"]}</div>', unsafe_allow_html=True)
+    st.warning(office["fee_text"])
     
-    with st.container():
-        st.subheader("Step 1: Contact Information")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            c_name = st.text_input("Legal Full Name")
-            c_email = st.text_input("Email Address")
-        with col_b:
-            c_phone = st.text_input("Mobile Phone Number")
-            c_date_acc = st.date_input("Date of Incident", value=date.today())
-        
-        c_dob = ""
-        c_ssn = ""
-        if office["needs_extra"]:
-            st.subheader("Step 2: Verification Details")
-            col1, col2 = st.columns(2)
-            with col1:
-                c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
-            with col2:
-                c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
-        
-        st.markdown('<div class="signature-box">', unsafe_allow_html=True)
-        st.subheader("Step 3: Execution of Agreement")
-        st.write(f"By typing your name below, you are electronically signing this agreement and authorizing **{office['full_name']}** to represent you.")
-        signature = st.text_input("Electronic Signature (Type Full Name)")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.write("") # Spacer
-        if st.button("EXECUTE & SUBMIT AGREEMENT"):
-            if signature and c_name and c_phone:
-                with st.spinner("Processing Secure Submission..."):
-                    try:
-                        sender_email = st.secrets["EMAIL_SENDER"]
-                        sender_password = st.secrets["EMAIL_PASSWORD"]
-                        
-                        subject = f"EXECUTED AGREEMENT: {c_name} - {office['full_name']}"
-                        body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}\nSignature: {signature}"
-                        
-                        msg = MIMEMultipart()
-                        msg['From'] = sender_email
-                        msg['To'] = office["target_email"]
-                        msg['Subject'] = subject
-                        msg.attach(MIMEText(body, 'plain'))
-                        
-                        server = smtplib.SMTP('smtp.gmail.com', 587)
-                        server.starttls()
-                        server.login(sender_email, sender_password)
-                        server.send_message(msg)
-                        server.quit()
-                        st.success(f"Agreement successfully executed and sent to {office['full_name']}.")
-                    except Exception as e:
-                        st.error(f"Transmission Error: {e}")
-            else:
-                st.error("Please complete all required fields and provide your signature.")
+    st.subheader("Incident & Contact Details")
+    c_name = st.text_input("Full Name")
+    c_date_acc = st.date_input("Date of Accident", value=date.today())
+    c_phone = st.text_input("Phone Number")
+    c_email = st.text_input("Email Address")
+    
+    c_dob = ""
+    c_ssn = ""
+    if office["needs_extra"]:
+        col1, col2 = st.columns(2)
+        with col1:
+            c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
+        with col2:
+            c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
+    
+    st.subheader("Representation Authorization")
+    st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
+    signature = st.text_input("Type Full Name to Sign")
+    
+    if st.button("Submit Signed Request"):
+        if signature and c_name and c_phone:
+            with st.spinner("Submitting..."):
+                try:
+                    sender_email = st.secrets["EMAIL_SENDER"]
+                    sender_password = st.secrets["EMAIL_PASSWORD"]
+                    
+                    subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
+                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}"
+                    
+                    msg = MIMEMultipart()
+                    msg['From'] = sender_email
+                    msg['To'] = office["target_email"]
+                    msg['Subject'] = subject
+                    msg.attach(MIMEText(body, 'plain'))
+                    
+                    server = smtplib.SMTP('smtp.gmail.com', 587)
+                    server.starttls()
+                    server.login(sender_email, sender_password)
+                    server.send_message(msg)
+                    server.quit()
+                    st.success(f"Sent successfully to {office['full_name']}.")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+        else:
+            st.error("Missing required fields.")
