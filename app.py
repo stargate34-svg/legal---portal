@@ -63,14 +63,14 @@ The undersigned certify that they have read and understand this agreement.""",
     }
 }
 
-# --- 1. DETECTION LOGIC ---
+# --- DETECTION LOGIC ---
 query_params = st.query_params
 office_key = query_params.get("f", "ralls").lower()
 if office_key not in attorney_data:
     office_key = "ralls"
 office = attorney_data[office_key]
 
-# --- 2. APP MODES ---
+# --- APP MODES ---
 if "f" in query_params:
     app_mode = "Client: Sign Form"
 else:
@@ -86,7 +86,7 @@ else:
                 office_key = k
                 office = v
 
-# --- 3. DYNAMIC HEADER BASED ON MODE ---
+# --- HEADER ---
 if app_mode == "Client: Sign Form":
     st.markdown(
         f"""
@@ -116,7 +116,7 @@ elif app_mode == "Marketer: Generate Link":
         unsafe_allow_html=True,
     )
 
-# --- 4. MARKETER DISPATCH ---
+# --- MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
     st.write(f"Generating secure link for: **{office['full_name']}**")
@@ -151,7 +151,7 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- 5. CLIENT FORM ---
+# --- CLIENT FORM (with HTML attachment) ---
 elif app_mode == "Client: Sign Form":
     st.warning(office["fee_text"])
     
@@ -174,7 +174,6 @@ elif app_mode == "Client: Sign Form":
     st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
     signature = st.text_input("Type Full Name to Sign")
     
-    # Add checkbox for explicit agreement
     agree = st.checkbox("I confirm that I have read and agree to the terms above.")
     
     if st.button("Submit Signed Request"):
@@ -184,21 +183,63 @@ elif app_mode == "Client: Sign Form":
                     sender_email = st.secrets["EMAIL_SENDER"]
                     sender_password = st.secrets["EMAIL_PASSWORD"]
                     
+                    # --- Build HTML attachment content ---
+                    html_content = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Signed Agreement</title></head>
+<body style="font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto;">
+    <h2 style="text-align: center; color: #2c5f8a;">SIGNED REPRESENTATION AGREEMENT</h2>
+    <hr style="border: 1px solid #2c5f8a;">
+    <h3>{office['full_name']}</h3>
+    <div style="background-color: #f5f7fa; padding: 15px; border-left: 4px solid #2c5f8a;">
+        <pre style="font-family: Arial, sans-serif; white-space: pre-wrap;">{office['fee_text']}</pre>
+    </div>
+    <h3>CLIENT INFORMATION</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr><td><strong>Full Name:</strong></td><td>{c_name}</td></tr>
+        <tr><td><strong>Accident Date:</strong></td><td>{c_date_acc}</td></tr>
+        <tr><td><strong>Phone:</strong></td><td>{c_phone}</td></tr>
+        <tr><td><strong>Email:</strong></td><td>{c_email}</td></tr>
+        <tr><td><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td></tr>
+        <tr><td><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td></tr>
+    </table>
+    <h3>SIGNATURE</h3>
+    <p><strong>Signed by:</strong> {signature}</p>
+    <p><strong>Date signed:</strong> {date.today().strftime('%B %d, %Y')}</p>
+    <hr>
+    <p style="text-align: center; color: gray;">This document was generated electronically.</p>
+</body>
+</html>"""
+                    
+                    # --- Create email ---
                     subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
-                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}"
+                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}\n\nA signed HTML agreement is attached."
                     
                     msg = MIMEMultipart()
                     msg['From'] = sender_email
                     msg['To'] = office["target_email"]
                     msg['Subject'] = subject
+                    
+                    # Attach body text
                     msg.attach(MIMEText(body, 'plain'))
                     
+                    # Attach the agreement as an HTML file
+                    attachment = MIMEText(html_content, 'html')
+                    attachment.add_header(
+                        'Content-Disposition',
+                        'attachment',
+                        filename=f"signed_agreement_{c_name.replace(' ', '_')}.html"
+                    )
+                    msg.attach(attachment)
+                    
+                    # Send email
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
                     server.login(sender_email, sender_password)
                     server.send_message(msg)
                     server.quit()
-                    st.success(f"Sent successfully to {office['full_name']}.")
+                    
+                    st.success(f"Sent successfully to {office['full_name']}. An HTML copy of the signed agreement is attached.")
                 except Exception as e:
                     st.error(f"Error: {e}")
         else:
