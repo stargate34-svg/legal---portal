@@ -45,7 +45,19 @@ By signing below, Client agrees to these terms.""",
     },
     "mckenzie": {
         "full_name": "Mckenzie & Snyder Legal Representation",
-        "fee_text": "**CONTINGENT FEE AGREEMENT**\nClient agrees to pay Lawyer 25% of the gross recovery.",
+        "fee_text": """**CONTINGENT FEE AGREEMENT**
+
+This agreement is voluntarily entered between the undersigned (Client) and McKenzie & Snyder LLP (Lawyer).
+
+Client retains Lawyer to recover damages sustained in an accident on the date provided below.
+
+In consideration of legal services, Client agrees to pay Lawyer **25% of the gross amount recovered**, whether by settlement or trial.
+
+Lawyer accepts employment and will do all acts necessary to protect Client's rights.
+
+If nothing is recovered, Lawyer receives no compensation. However, Client is obligated to pay all reasonable expenses that Client authorizes or that Lawyer deems necessary to advance the claim. Client authorizes Lawyer to deduct medical bills from the gross settlement, so that Lawyer may pay such bills on behalf of Client.
+
+The undersigned certify that they have read and understand this agreement.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3f2b5" # Green
