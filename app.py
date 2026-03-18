@@ -24,7 +24,21 @@ In the event of no recovery, Client owes Attorney nothing for services rendered.
     },
     "ohio": {
         "full_name": "Ohio Injury Attorneys",
-        "fee_text": "**AUTHORITY TO REPRESENT AND FEE AGREEMENT**\nContingency fee of 25% for out-of-court and 33% for litigation.",
+        "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
+
+1. **Contingency Fee.** The Firm shall receive a contingency fee of **25% (1/4)** of all funds collected for an out‑of‑court settlement. If litigation is pursued, the fee shall be **33% (1/3)** of all funds collected.
+
+2. **Expenses.** Expenses (investigation, records, court fees, etc.) are the sole responsibility of the Client. They will not be included in the Firm's contingency fee. Any funds advanced by the Firm shall be reimbursed from settlement proceeds.
+
+3. **Medical Bills.** Medical bills are the Client's responsibility. At Client's direction, the Firm will pay medical bills out of any settlement.
+
+4. **Liens & Subrogation.** The Firm may be obligated to pay any liens or subrogation interests out of settlement. Client must inform the Firm of any third‑party interests.
+
+5. **Termination.** Either party may terminate the agreement. If Client terminates, the Firm shall be compensated for work performed unless a waiver is agreed in writing.
+
+6. **Medical Authorization.** By signing below, Client grants permission to obtain and update medical records and to disclose case information to providers for bill negotiation.
+
+By signing below, Client agrees to these terms.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3c2f2" # Blue
