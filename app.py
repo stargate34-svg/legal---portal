@@ -7,7 +7,6 @@ from datetime import date
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
 # --- DATA: Mapped to Short Keys for reliability ---
-# We use short "slugs" (ralls, ohio, mckenzie) for the URL
 attorney_data = {
     "ralls": {
         "full_name": "Ralls Legal Representation",
@@ -20,7 +19,7 @@ Client shall pay no upfront fee. Attorney shall work on a contingent fee basis a
 In the event of no recovery, Client owes Attorney nothing for services rendered.""",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com",
-        "color": "#f2e1a3" # Gold
+        "color": "#f2e1a3"
     },
     "ohio": {
         "full_name": "Ohio Injury Attorneys",
@@ -41,7 +40,7 @@ In the event of no recovery, Client owes Attorney nothing for services rendered.
 By signing below, Client agrees to these terms.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
-        "color": "#a3c2f2" # Blue
+        "color": "#a3c2f2"
     },
     "mckenzie": {
         "full_name": "Mckenzie & Snyder Legal Representation",
@@ -60,42 +59,34 @@ If nothing is recovered, Lawyer receives no compensation. However, Client is obl
 The undersigned certify that they have read and understand this agreement.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
-        "color": "#a3f2b5" # Green
+        "color": "#a3f2b5"
     }
 }
 
-# --- 1. DETECTION LOGIC ---
+# --- DETECTION LOGIC ---
 query_params = st.query_params
-# We look for '?f=' in the URL
 office_key = query_params.get("f", "ralls").lower()
-
-# Safety fallback: If key isn't found, default to ralls
 if office_key not in attorney_data:
     office_key = "ralls"
-
-# Get the full data for the active office
 office = attorney_data[office_key]
 
-# --- 2. APP MODES ---
+# --- APP MODES ---
 if "f" in query_params:
     app_mode = "Client: Sign Form"
 else:
     st.sidebar.title("Navigation")
     app_mode = st.sidebar.radio("Go to:", ["Marketer: Generate Link", "Client: Sign Form"])
-    
     if app_mode == "Marketer: Generate Link":
-        # Let marketers pick by the full name
         selected_display = st.sidebar.selectbox(
             "Select Office:", 
             [attorney_data[k]["full_name"] for k in attorney_data]
         )
-        # Find the key that matches that display name
         for k, v in attorney_data.items():
             if v["full_name"] == selected_display:
                 office_key = k
                 office = v
 
-# --- 3. DYNAMIC HEADER BASED ON MODE ---
+# --- DYNAMIC HEADER ---
 if app_mode == "Client: Sign Form":
     st.markdown(
         f"""
@@ -125,18 +116,14 @@ elif app_mode == "Marketer: Generate Link":
         unsafe_allow_html=True,
     )
 
-# --- 4. MARKETER DISPATCH ---
+# --- MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
     st.write(f"Generating secure link for: **{office['full_name']}**")
-    
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     final_link = f"{base_url}?f={office_key}"
-    
     st.info("Client Access Link (Copy This):")
     st.code(final_link, language=None)
-    
-    # Copy button with visual feedback (depresses on click)
     copy_html = f"""
     <div style="display: flex; justify-content: center; margin-top: 10px;">
         <style>
@@ -154,13 +141,8 @@ if app_mode == "Marketer: Generate Link":
                 border-radius: 8px;
                 transition: all 0.1s ease;
             }}
-            .copy-btn:hover {{
-                background-color: #45a049;
-            }}
-            .copy-btn:active {{
-                transform: scale(0.95);
-                background-color: #3d8b40;
-            }}
+            .copy-btn:hover {{ background-color: #45a049; }}
+            .copy-btn:active {{ transform: scale(0.95); background-color: #3d8b40; }}
         </style>
         <button class="copy-btn" onclick="navigator.clipboard.writeText('{final_link}')">
             📋 Copy Link to Clipboard
@@ -169,21 +151,32 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- 5. CLIENT FORM (fixed trust-color container) ---
+# --- CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
-    # Simple container with trust colors that won't mess up formatting
+    # Inject CSS to restyle the warning box with trust colors
     st.markdown(
-        f"""
-        <div style="background-color: #f5f7fa; padding: 25px; border-radius: 10px; border-left: 6px solid #2c5f8a; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        """
+        <style>
+        div.stWarning {
+            background-color: #f5f7fa !important;
+            border-left-color: #2c5f8a !important;
+            color: #1e2b37 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 12px rgba(44,95,138,0.08) !important;
+        }
+        div.stWarning > div > p {
+            color: #1e2b37 !important;
+        }
+        div.stWarning strong {
+            color: #2c5f8a !important;
+        }
+        </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
     
-    # Display the fee text normally (this preserves all original formatting)
-    st.markdown(office["fee_text"])
-    
-    # Close the container
-    st.markdown("</div>", unsafe_allow_html=True)
+    # Use the standard warning box – it will now have our colors
+    st.warning(office["fee_text"])
     
     st.subheader("Incident & Contact Details")
     c_name = st.text_input("Full Name")
