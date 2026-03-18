@@ -2,10 +2,7 @@ import streamlit as st
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
 from datetime import date
-from fpdf import FPDF
-import io
 
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
@@ -177,6 +174,7 @@ elif app_mode == "Client: Sign Form":
     st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
     signature = st.text_input("Type Full Name to Sign")
     
+    # Add checkbox for explicit agreement
     agree = st.checkbox("I confirm that I have read and agree to the terms above.")
     
     if st.button("Submit Signed Request"):
@@ -186,75 +184,21 @@ elif app_mode == "Client: Sign Form":
                     sender_email = st.secrets["EMAIL_SENDER"]
                     sender_password = st.secrets["EMAIL_PASSWORD"]
                     
-                    # --- Create PDF attachment ---
-                    pdf = FPDF()
-                    pdf.add_page()
-                    pdf.set_font("Arial", size=12)
-                    
-                    # Title
-                    pdf.set_font("Arial", 'B', 16)
-                    pdf.cell(200, 10, txt="SIGNED REPRESENTATION AGREEMENT", ln=1, align='C')
-                    pdf.ln(10)
-                    
-                    # Office
-                    pdf.set_font("Arial", 'B', 14)
-                    pdf.cell(200, 10, txt=office['full_name'], ln=1, align='L')
-                    pdf.ln(5)
-                    
-                    # Fee agreement (preserve bold markers as plain text, but we'll keep them)
-                    pdf.set_font("Arial", '', 12)
-                    pdf.multi_cell(0, 10, txt=office['fee_text'])
-                    pdf.ln(5)
-                    
-                    # Client information
-                    pdf.set_font("Arial", 'B', 12)
-                    pdf.cell(200, 10, txt="CLIENT INFORMATION", ln=1)
-                    pdf.set_font("Arial", '', 12)
-                    pdf.cell(200, 10, txt=f"Full Name: {c_name}", ln=1)
-                    pdf.cell(200, 10, txt=f"Accident Date: {c_date_acc}", ln=1)
-                    pdf.cell(200, 10, txt=f"Phone: {c_phone}", ln=1)
-                    pdf.cell(200, 10, txt=f"Email: {c_email}", ln=1)
-                    if c_dob:
-                        pdf.cell(200, 10, txt=f"Date of Birth: {c_dob}", ln=1)
-                    if c_ssn:
-                        pdf.cell(200, 10, txt=f"Last 4 SSN: {c_ssn}", ln=1)
-                    pdf.ln(5)
-                    
-                    # Signature
-                    pdf.set_font("Arial", 'B', 12)
-                    pdf.cell(200, 10, txt="SIGNATURE", ln=1)
-                    pdf.set_font("Arial", '', 12)
-                    pdf.cell(200, 10, txt=f"Signed by: {signature}", ln=1)
-                    pdf.cell(200, 10, txt=f"Date signed: {date.today().strftime('%B %d, %Y')}", ln=1)
-                    
-                    # Output PDF to bytes
-                    pdf_bytes = pdf.output(dest='S').encode('latin1')
-                    
-                    # --- Create email ---
                     subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
-                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}\n\nA signed PDF agreement is attached."
+                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}"
                     
                     msg = MIMEMultipart()
                     msg['From'] = sender_email
                     msg['To'] = office["target_email"]
                     msg['Subject'] = subject
-                    
-                    # Attach body text
                     msg.attach(MIMEText(body, 'plain'))
                     
-                    # Attach PDF
-                    attachment = MIMEApplication(pdf_bytes, _subtype='pdf')
-                    attachment.add_header('Content-Disposition', 'attachment', filename=f"signed_agreement_{c_name.replace(' ', '_')}.pdf")
-                    msg.attach(attachment)
-                    
-                    # Send email
                     server = smtplib.SMTP('smtp.gmail.com', 587)
                     server.starttls()
                     server.login(sender_email, sender_password)
                     server.send_message(msg)
                     server.quit()
-                    
-                    st.success(f"Sent successfully to {office['full_name']}. A PDF copy of the signed agreement is attached.")
+                    st.success(f"Sent successfully to {office['full_name']}.")
                 except Exception as e:
                     st.error(f"Error: {e}")
         else:
