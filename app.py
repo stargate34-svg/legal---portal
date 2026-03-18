@@ -6,17 +6,18 @@ from datetime import date
 
 st.set_page_config(page_title="Representation Portal", layout="centered", page_icon="⚖️")
 
-# --- GLOBAL STYLE IMPROVEMENTS ---
+# --- GLOBAL STYLE ---
 st.markdown("""
 <style>
 body {
-    background-color: #f5f7fa;
+    background-color: #f4f6f9;
 }
 .block-container {
     padding-top: 2rem;
+    max-width: 700px;
 }
-h2 {
-    margin-top: 10px;
+div[data-testid="stTextInput"] input {
+    padding: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -104,42 +105,43 @@ else:
                 office_key = k
                 office = v
 
-# --- HEADER ---
+# --- HEADER (unchanged structure, refined style) ---
 st.markdown(f"""
 <div style="
 background-color: #1a1a1a;
 padding: 25px;
 border-radius: 12px;
 text-align: center;
-border-bottom: 6px solid {office['color']};
-margin-bottom: 30px;
-box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+border-bottom: 5px solid {office['color']};
+margin-bottom: 25px;
+box-shadow: 0 3px 10px rgba(0,0,0,0.25);
 ">
 <span style="
-font-size: 32px;
+font-size: 30px;
 color: {office['color']};
 font-weight: bold;
-font-family: 'Times New Roman';
+font-family: 'Times New Roman', serif;
 ">
 ⚖️ {office['full_name']}
 </span>
 <div style="
-font-size: 13px;
+font-size: 12px;
 color: #ffffff;
 letter-spacing: 2px;
 text-transform: uppercase;
 margin-top: 6px;
-opacity: 0.8;
+opacity: 0.85;
 ">
 Professional Legal Services
 </div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- MARKETER MODE ---
+# --- MARKETER ---
 if app_mode == "Marketer: Generate Link":
 
     st.subheader("Marketer Dispatch")
+    st.write(f"Generating secure link for: **{office['full_name']}**")
 
     base_url = "https://legal---app-fwqqgehtna457ta8badeuo.streamlit.app/"
     final_link = f"{base_url}?f={office_key}"
@@ -147,45 +149,32 @@ if app_mode == "Marketer: Generate Link":
     st.info("Client Access Link (Copy This):")
     st.code(final_link)
 
-    st.markdown(f"""
-    <div style="text-align:center; margin-top:10px;">
-        <button onclick="navigator.clipboard.writeText('{final_link}')"
-        style="background:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:8px;">
-        📋 Copy Link
-        </button>
-    </div>
-    """, unsafe_allow_html=True)
-
 # --- CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
 
-    # STEP 1
-    st.markdown("## Step 1: Review Agreement")
-
+    # Agreement (FIXED DESIGN ONLY)
     st.markdown(f"""
     <div style="
-    background:#ffffff;
-    padding:25px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    box-shadow:0 2px 8px rgba(0,0,0,0.08);
-    line-height:1.7;
+    background-color: #ffffff;
+    padding: 22px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 20px;
     ">
     {office["fee_text"]}
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("---")
+    st.subheader("Incident & Contact Details")
 
-    # STEP 2
-    st.markdown("## Step 2: Enter Your Information")
-
+    # Better alignment (same fields)
     col1, col2 = st.columns(2)
-
     with col1:
         c_name = st.text_input("Full Name")
         c_phone = st.text_input("Phone Number")
-
     with col2:
         c_email = st.text_input("Email Address")
         c_date_acc = st.date_input("Date of Accident", value=date.today())
@@ -200,41 +189,28 @@ elif app_mode == "Client: Sign Form":
         with col4:
             c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
 
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    # STEP 3
-    st.markdown("## Step 3: Authorization & Signature")
-
-    st.markdown(f"""
-    <div style="
-    background:#f9f9f9;
-    padding:20px;
-    border-radius:10px;
-    border:1px solid #ddd;
-    margin-bottom:15px;
-    ">
-    By signing below, I authorize <b>{office['full_name']}</b> to represent me regarding my claims.
-    </div>
-    """, unsafe_allow_html=True)
+    st.subheader("Representation Authorization")
+    st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
 
     signature = st.text_input("Type Full Name to Sign")
 
-    # BUTTON STYLE
+    # Button styling only
     st.markdown(f"""
     <style>
     div.stButton > button {{
-        background:#1a1a1a;
-        color:white;
-        font-size:18px;
-        padding:14px;
-        border-radius:10px;
-        width:100%;
-        border-bottom:4px solid {office['color']};
+        background-color: #1a1a1a;
+        color: white;
+        font-size: 16px;
+        padding: 12px;
+        border-radius: 8px;
+        width: 100%;
+        border-bottom: 4px solid {office['color']};
     }}
     </style>
     """, unsafe_allow_html=True)
 
-    # SUBMIT
     if st.button("Submit Signed Request"):
         if signature and c_name and c_phone:
             with st.spinner("Submitting..."):
@@ -257,7 +233,7 @@ elif app_mode == "Client: Sign Form":
                     server.send_message(msg)
                     server.quit()
 
-                    st.success(f"Request submitted successfully to {office['full_name']}.")
+                    st.success(f"Sent successfully to {office['full_name']}.")
 
                 except Exception as e:
                     st.error(f"Error: {e}")
