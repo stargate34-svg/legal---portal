@@ -63,14 +63,14 @@ The undersigned certify that they have read and understand this agreement.""",
     }
 }
 
-# --- DETECTION LOGIC ---
+# --- 1. DETECTION LOGIC ---
 query_params = st.query_params
 office_key = query_params.get("f", "ralls").lower()
 if office_key not in attorney_data:
     office_key = "ralls"
 office = attorney_data[office_key]
 
-# --- APP MODES ---
+# --- 2. APP MODES ---
 if "f" in query_params:
     app_mode = "Client: Sign Form"
 else:
@@ -86,7 +86,7 @@ else:
                 office_key = k
                 office = v
 
-# --- DYNAMIC HEADER ---
+# --- 3. DYNAMIC HEADER BASED ON MODE ---
 if app_mode == "Client: Sign Form":
     st.markdown(
         f"""
@@ -116,7 +116,7 @@ elif app_mode == "Marketer: Generate Link":
         unsafe_allow_html=True,
     )
 
-# --- MARKETER DISPATCH ---
+# --- 4. MARKETER DISPATCH ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
     st.write(f"Generating secure link for: **{office['full_name']}**")
@@ -151,7 +151,7 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- CLIENT FORM ---
+# --- 5. CLIENT FORM ---
 elif app_mode == "Client: Sign Form":
     # Inject CSS to restyle the warning box with trust colors
     st.markdown(
