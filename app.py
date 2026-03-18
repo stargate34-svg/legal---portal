@@ -136,11 +136,33 @@ if app_mode == "Marketer: Generate Link":
     st.info("Client Access Link (Copy This):")
     st.code(final_link, language=None)
     
-    # Copy button without pop-up alerts
+    # Copy button with visual feedback (depresses on click)
     copy_html = f"""
     <div style="display: flex; justify-content: center; margin-top: 10px;">
-        <button onclick="navigator.clipboard.writeText('{final_link}')" 
-                style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 8px;">
+        <style>
+            .copy-btn {{
+                background-color: #4CAF50;
+                border: none;
+                color: white;
+                padding: 10px 24px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: all 0.1s ease;
+            }}
+            .copy-btn:hover {{
+                background-color: #45a049;
+            }}
+            .copy-btn:active {{
+                transform: scale(0.95);
+                background-color: #3d8b40;
+            }}
+        </style>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('{final_link}')">
             📋 Copy Link to Clipboard
         </button>
     </div>
