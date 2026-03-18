@@ -125,7 +125,7 @@ elif app_mode == "Marketer: Generate Link":
         unsafe_allow_html=True,
     )
 
-# --- 4. MARKETER DISPATCH ---
+# --- 4. MARKETER DISPATCH (with visual feedback button) ---
 if app_mode == "Marketer: Generate Link":
     st.subheader("Marketer Dispatch")
     st.write(f"Generating secure link for: **{office['full_name']}**")
@@ -169,9 +169,59 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- 5. CLIENT FORM ---
+# --- 5. CLIENT FORM (with trust-colored fee agreement) ---
 elif app_mode == "Client: Sign Form":
-    st.warning(office["fee_text"])
+    # Custom styled container with blue, green, gray trust colors
+    st.markdown(
+        f"""
+        <style>
+        .fee-agreement {{
+            background-color: #f5f7fa;        /* soft gray-blue background */
+            border-left: 8px solid #2c5f8a;    /* navy blue accent */
+            border-radius: 10px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 16px rgba(44,95,138,0.08);
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            position: relative;
+        }}
+        .fee-agreement::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2c5f8a 0%, #2e7d32 70%, #9aa9b7 100%);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }}
+        .fee-agreement h4 {{
+            color: #1e5631;                    /* deep green heading */
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #d0d9e2;  /* light gray underline */
+            padding-bottom: 10px;
+        }}
+        .fee-agreement p {{
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #1e2b37;                    /* dark gray text */
+        }}
+        .fee-agreement strong {{
+            color: #2c5f8a;                    /* blue emphasis */
+        }}
+        </style>
+        <div class="fee-agreement">
+            <h4>⚖️ Retainer & Fee Agreement</h4>
+            {office['fee_text'].replace('\n', '<br>')}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     
     st.subheader("Incident & Contact Details")
     c_name = st.text_input("Full Name")
