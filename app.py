@@ -169,10 +169,64 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- 5. CLIENT FORM ---
+# --- 5. CLIENT FORM (with trust-color container) ---
 elif app_mode == "Client: Sign Form":
-    st.warning(office["fee_text"])
-    
+    # Apply custom CSS for the trust-color container
+    st.markdown(
+        """
+        <style>
+        .trust-container {
+            background-color: #f5f7fa;
+            border-left: 8px solid #2c5f8a;
+            border-radius: 10px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 16px rgba(44,95,138,0.08);
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            position: relative;
+        }
+        .trust-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2c5f8a 0%, #2e7d32 70%, #9aa9b7 100%);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .trust-container h4 {
+            color: #1e5631;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid #d0d9e2;
+            padding-bottom: 10px;
+        }
+        .trust-container p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #1e2b37;
+        }
+        .trust-container strong {
+            color: #2c5f8a;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Open the container div
+    st.markdown('<div class="trust-container">', unsafe_allow_html=True)
+    st.markdown("<h4>⚖️ Retainer & Fee Agreement</h4>", unsafe_allow_html=True)
+    # Render the fee text with full Markdown support
+    st.markdown(office["fee_text"])
+    # Close the container div
+    st.markdown('</div>', unsafe_allow_html=True)
+
     st.subheader("Incident & Contact Details")
     c_name = st.text_input("Full Name")
     c_date_acc = st.date_input("Date of Accident", value=date.today())
