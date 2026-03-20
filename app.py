@@ -10,13 +10,9 @@ st.set_page_config(page_title="Representation Portal", layout="centered", page_i
 attorney_data = {
     "ralls": {
         "full_name": "Ralls Legal Representation",
-        "fee_text": """**CONTINGENT FEE AGREEMENT**
+        "fee_text": """The undersigned, hereinafter (Client), retains the undersigned, hereinafter (Attorney) for representation for Personal Injuries. Attorney(s) will devote their full professional abilities to Client's case. Client understands that the claim may be handled by one or more of the members, staff, or associates of Attorney. Client shall not pay Attorney an upfront fee because Attorney shall work on a contingent fee only. For their fee, Attorney shall receive one‑third (1/3) of the total gross amount of recovery of any settlement.
 
-The undersigned (Client) retains the undersigned (Attorney) for representation regarding personal injuries. Attorney will devote their professional abilities to the case, which may be handled by one or more members, staff, or associates.
-
-Client shall pay no upfront fee. Attorney shall work on a contingent fee basis and shall receive **one‑third (1/3) of the total gross amount recovered** from any settlement or judgment.
-
-In the event of no recovery, Client owes Attorney nothing for services rendered.""",
+Accordingly, in the event of no recovery. Client shall owe Attorney nothing for services rendered""",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#f2e1a3"
@@ -196,12 +192,12 @@ elif app_mode == "Client: Sign Form":
     </div>
     <h3>CLIENT INFORMATION</h3>
     <table style="width: 100%; border-collapse: collapse;">
-        <tr><td><strong>Full Name:</strong></td><td>{c_name}</td></tr>
-        <tr><td><strong>Accident Date:</strong></td><td>{c_date_acc}</td></tr>
-        <tr><td><strong>Phone:</strong></td><td>{c_phone}</td></tr>
-        <tr><td><strong>Email:</strong></td><td>{c_email}</td></tr>
-        <tr><td><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td></tr>
-        <tr><td><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td>
+        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td>
+        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td>
+        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
+        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
+        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
     </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
