@@ -50,9 +50,7 @@ Accordingly, in the event of no recovery. Client shall owe Attorney nothing for 
 (9) **Special Terms.**
 _________________________________________________________________
 
-By signing below, the Client agrees to the terms and conditions of this contract.
-
-Client Name: _______________________________ Attorney Signature: _______________________________ Client Signature: _______________________________ Date: _______________________________""",
+By signing below, the Client agrees to the terms and conditions of this contract.""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3c2f2"
