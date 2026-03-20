@@ -19,21 +19,40 @@ Accordingly, in the event of no recovery. Client shall owe Attorney nothing for 
     },
     "ohio": {
         "full_name": "Ohio Injury Attorneys",
-        "fee_text": """**AUTHORITY TO REPRESENT AND FEE AGREEMENT**
+        "fee_text": """**CONTRACT FOR REPRESENTATION**
 
-1. **Contingency Fee.** The Firm shall receive a contingency fee of **25% (1/4)** of all funds collected for an out‑of‑court settlement. If litigation is pursued, the fee shall be **33% (1/3)** of all funds collected.
+> I ("the Client") agree to retain and employ Ohio Injury Attorneys
+> ("the Firm") to represent me for my injury claim. The following terms
+> shall apply: 
 
-2. **Expenses.** Expenses (investigation, records, court fees, etc.) are the sole responsibility of the Client. They will not be included in the Firm's contingency fee. Any funds advanced by the Firm shall be reimbursed from settlement proceeds.
+(1) **Contingency Fee.** The Firm shall receive a contingency fee of 25% (1/4) of all funds collected for a settlement obtained without litigation. If the Client and the Firm agree to pursue litigation, the Firm shall receive a contingency fee of 33% (1/3) of all funds collected.
 
-3. **Medical Bills.** Medical bills are the Client's responsibility. At Client's direction, the Firm will pay medical bills out of any settlement.
+(2) **Expenses.** The Firm shall be reimbursed for all reasonable expenses necessary to pursue the Client's claim including, but not limited to, invoices required to obtain medical documentation, court costs, and payment for expert testimony.
 
-4. **Liens & Subrogation.** The Firm may be obligated to pay any liens or subrogation interests out of settlement. Client must inform the Firm of any third‑party interests.
+> A. The Firm is not obligated advance funds on the Client's behalf. At the conclusion of representation, the Firm shall be reimbursed for case expenses.
+>
+> B. Expenses are not included in the Firm's contingency fee.
+>
+> C. The Firm shall provide an itemization of all case expenses.
 
-5. **Termination.** Either party may terminate the agreement. If Client terminates, the Firm shall be compensated for work performed unless a waiver is agreed in writing.
+(3) **Medical Bills.** The Firm is under no obligation to pay medical bills on the Client's behalf. Medical bills are the sole responsibility of the Client. At the conclusion of the case, the Firm will pay medical bills at the client's direction.
 
-6. **Medical Authorization.** By signing below, Client grants permission to obtain and update medical records and to disclose case information to providers for bill negotiation.
+(4) **Liens.** At the conclusion of the claim, the Firm may be obligated to pay a medical lien, subrogation lien, or lien from some other third party out of the distribution of case proceeds. The Client shall contact the Firm if the Client is notified by a third party regarding a lien on the case.
 
-By signing below, Client agrees to these terms.""",
+(5) **Termination by Client.** Client may terminate representation at any time, but the Firm shall be compensated for the work performed. If the Firm has obtained a settlement offer, the Firm shall be compensated based on a contingency fee percentage of the highest offer prior to termination. If the Firm is terminated prior to receiving a settlement offer, Client shall compensate the Firm for work performed. No fee will be owed to the Firm if the Firm is unable to resolve the Client's claim or if the Firm agrees writing to waive its fee.
+
+(6) **Termination by the Firm.** The Firm may terminate the Contract for Representation for good cause.
+
+(7) **Medical Authorization.** When required, the Client grants the Firm permission to update any signed medical authorization in order to request and obtain necessary medical documentation. If the Firm is attempting to negotiation bill reductions, Client authorizes the Firm to disclose case information to medical providers.
+
+(8) **Worker's Compensation.** Client permits Firm to share Client identifiers with Nager, Romaine, and Schneiberg for potential Worker's Compensation claims.
+
+(9) **Special Terms.**
+_________________________________________________________________
+
+By signing below, the Client agrees to the terms and conditions of this contract.
+
+Client Name: _______________________________ Attorney Signature: _______________________________ Client Signature: _______________________________ Date: _______________________________""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3c2f2"
@@ -198,7 +217,7 @@ elif app_mode == "Client: Sign Form":
         <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
         <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
         <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
-    </table>
+     </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
     <p><strong>Date signed:</strong> {date.today().strftime('%B %d, %Y')}</p>
