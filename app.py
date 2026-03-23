@@ -56,7 +56,7 @@ By signing below, the Client agrees to the terms and conditions of this contract
         "color": "#a3c2f2"
     },
     "mckenzie": {
-        "full_name": "Mckenzie & Snyder Legal Representation",
+        "full_name": "McKenzie & Snyder Legal Representation",
         "fee_text": "",  # Not used for this office
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
