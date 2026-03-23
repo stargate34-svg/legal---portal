@@ -39,7 +39,7 @@ Accordingly. in the event of no recovery, Client shall owe Attorney nothing for 
 
 (4) **Liens.** At the conclusion of the claim, the Firm may be obligated to pay a medical lien, subrogation lien, or lien from some other third party out of the distribution of case proceeds. The Client shall contact the Firm if the Client is notified by a third party regarding a lien on the case.
 
-(5) **Termination by Client.** Client may terminate representation at any time, but the Firm shall be compensated for the work performed. If the Firm has obtained a settlement offer, the Firm shall be compensated based on a contingency fee percentage of the highest offer prior to termination. If the Firm is terminated prior to receiving a settlement offer, Client shall compensate the Firm for work performed. No fee will be owed to the Firm if the Firm is unable to resolve the Client's claim or if the Firm agrees writing to waive its fee.
+(5) **Termination by Client.** Client may terminate representation at any time, but the Firm shall be compensated for the work performed. If the Firm has obtained a settlement offer, the Firm shall be compensated based on a contingency fee percentage of the highest offer prior to termination. If the Firm is terminated prior to receiving a settlement offer, Client shall compensate the Firm for work performed. No fee will be owed to the Firm if the Firm is unable to resolve the Client’s claim or if the Firm agrees in writing to waive its fee.
 
 (6) **Termination by the Firm.** The Firm may terminate the Contract for Representation for good cause.
 
