@@ -155,7 +155,7 @@ if app_mode == "Marketer: Generate Link":
 # --- CLIENT FORM (or intake info for McKenzie) ---
 elif app_mode == "Client: Sign Form":
     if office_key == "mckenzie":
-        # Show only the intake protocol information
+        # Show only the intake protocol information (without names)
         st.markdown(
             """
             ### Intake Team Transfer Protocol
@@ -164,13 +164,10 @@ elif app_mode == "Client: Sign Form":
             For all live transfers, connect directly to the Intake Team at:  
             **1.513.788.4699**
 
-            **Staffing & Availability**
-
-            | Name   | Schedule       | Shift Hours       |
-            |--------|----------------|-------------------|
-            | Vee    | Monday – Friday| 9:00 AM – 5:00 PM |
-            | Liam   | Monday – Friday| 9:00 AM – 5:00 PM |
-            | Conney | Wednesday – Sunday | 9:00 AM – 8:00 PM |
+            **Hours of Availability:**  
+            - Monday – Tuesday: 9:00 AM – 6:00 PM  
+            - Wednesday – Friday: 9:00 AM – 8:00 PM  
+            - Saturday – Sunday: 12:00 PM – 8:00 PM
             """
         )
     else:
@@ -218,12 +215,12 @@ elif app_mode == "Client: Sign Form":
     </div>
     <h3>CLIENT INFORMATION</h3>
     <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td></tr>
-        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td></tr>
-        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td></tr>
-        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td></tr>
-        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td></tr>
-        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td>
+        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td>
+        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td>
+        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
+        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
+        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
     </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
