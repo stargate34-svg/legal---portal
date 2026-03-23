@@ -12,7 +12,7 @@ attorney_data = {
         "full_name": "Ralls Legal Representation",
         "fee_text": """The undersigned, hereinafter (Client), retains the undersigned, hereinafter (Attorney) for representation for Personal Injuries. Attorney(s) will devote their full professional abilities to Client's case. Client understands that the claim may be handled by one or more of the members, staff, or associates of Attorney. Client shall not pay Attorney an upfront fee because Attorney shall work on a contingent fee only. For their fee, Attorney shall receive one‑third (1/3) of the total gross amount of recovery of any settlement.
 
-Accordingly. in the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
+Accordingly, in the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
         "needs_extra": False,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#f2e1a3"
