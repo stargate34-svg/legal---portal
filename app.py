@@ -43,7 +43,7 @@ Accordingly, in the event of no recovery, Client shall owe Attorney nothing for 
 
 (6) **Termination by the Firm.** The Firm may terminate the Contract for Representation for good cause.
 
-(7) **Medical Authorization.** When required, the Client grants the Firm permission to update any signed medical authorization in order to request and obtain necessary medical documentation. If the Firm is attempting to negotiate bill reductions, Client authorizes the Firm to disclose case information tomedical providers.
+(7) **Medical Authorization.** When required, the Client grants the Firm permission to update any signed medical authorization in order to request and obtain necessary medical documentation. If the Firm is attempting to negotiate bill reductions, Client authorizes the Firm to disclose case information to medical providers.
 
 (8) **Worker's Compensation.** Client permits Firm to share Client identifiers with Nager, Romaine, and Schneiberg for potential Worker's Compensation claims.
 
