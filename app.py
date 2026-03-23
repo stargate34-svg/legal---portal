@@ -57,19 +57,7 @@ By signing below, the Client agrees to the terms and conditions of this contract
     },
     "mckenzie": {
         "full_name": "Mckenzie & Snyder Legal Representation",
-        "fee_text": """**CONTINGENT FEE AGREEMENT**
-
-This agreement is voluntarily entered between the undersigned (Client) and McKenzie & Snyder LLP (Lawyer).
-
-Client retains Lawyer to recover damages sustained in an accident on the date provided below.
-
-In consideration of legal services, Client agrees to pay Lawyer **25% of the gross amount recovered**, whether by settlement or trial.
-
-Lawyer accepts employment and will do all acts necessary to protect Client's rights.
-
-If nothing is recovered, Lawyer receives no compensation. However, Client is obligated to pay all reasonable expenses that Client authorizes or that Lawyer deems necessary to advance the claim. Client authorizes Lawyer to deduct medical bills from the gross settlement, so that Lawyer may pay such bills on behalf of Client.
-
-The undersigned certify that they have read and understand this agreement.""",
+        "fee_text": "",  # Not used for this office
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3f2b5"
@@ -164,40 +152,61 @@ if app_mode == "Marketer: Generate Link":
     """
     st.components.v1.html(copy_html, height=80)
 
-# --- CLIENT FORM (with HTML attachment) ---
+# --- CLIENT FORM (or intake info for McKenzie) ---
 elif app_mode == "Client: Sign Form":
-    st.warning(office["fee_text"])
-    
-    st.subheader("Incident & Contact Details")
-    c_name = st.text_input("Full Name")
-    c_date_acc = st.date_input("Date of Accident", value=date.today())
-    c_phone = st.text_input("Phone Number")
-    c_email = st.text_input("Email Address")
-    
-    c_dob = ""
-    c_ssn = ""
-    if office["needs_extra"]:
-        col1, col2 = st.columns(2)
-        with col1:
-            c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
-        with col2:
-            c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
-    
-    st.subheader("Representation Authorization")
-    st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
-    signature = st.text_input("Type Full Name to Sign")
-    
-    agree = st.checkbox("I confirm that I have read and agree to the terms above.")
-    
-    if st.button("Submit Signed Request"):
-        if signature and c_name and c_phone and agree:
-            with st.spinner("Submitting..."):
-                try:
-                    sender_email = st.secrets["EMAIL_SENDER"]
-                    sender_password = st.secrets["EMAIL_PASSWORD"]
-                    
-                    # --- Build HTML attachment content ---
-                    html_content = f"""<!DOCTYPE html>
+    if office_key == "mckenzie":
+        # Show only the intake protocol information
+        st.markdown(
+            """
+            ### Intake Team Transfer Protocol
+
+            **Primary Contact Method:**  
+            For all live transfers, connect directly to the Intake Team at:  
+            **1.513.788.4699**
+
+            **Staffing & Availability**
+
+            | Name   | Schedule       | Shift Hours       |
+            |--------|----------------|-------------------|
+            | Vee    | Monday – Friday| 9:00 AM – 5:00 PM |
+            | Liam   | Monday – Friday| 9:00 AM – 5:00 PM |
+            | Conney | Wednesday – Sunday | 9:00 AM – 8:00 PM |
+            """
+        )
+    else:
+        # Normal client intake form for Ralls and Ohio
+        st.warning(office["fee_text"])
+        
+        st.subheader("Incident & Contact Details")
+        c_name = st.text_input("Full Name")
+        c_date_acc = st.date_input("Date of Accident", value=date.today())
+        c_phone = st.text_input("Phone Number")
+        c_email = st.text_input("Email Address")
+        
+        c_dob = ""
+        c_ssn = ""
+        if office["needs_extra"]:
+            col1, col2 = st.columns(2)
+            with col1:
+                c_dob = st.text_input("Date of Birth (MM/DD/YYYY)")
+            with col2:
+                c_ssn = st.text_input("Last 4 of SSN", max_chars=4)
+        
+        st.subheader("Representation Authorization")
+        st.write(f"By signing below, I authorize **{office['full_name']}** to represent me regarding my claims.")
+        signature = st.text_input("Type Full Name to Sign")
+        
+        agree = st.checkbox("I confirm that I have read and agree to the terms above.")
+        
+        if st.button("Submit Signed Request"):
+            if signature and c_name and c_phone and agree:
+                with st.spinner("Submitting..."):
+                    try:
+                        sender_email = st.secrets["EMAIL_SENDER"]
+                        sender_password = st.secrets["EMAIL_PASSWORD"]
+                        
+                        # --- Build HTML attachment content ---
+                        html_content = f"""<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><title>Signed Agreement</title></head>
 <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto;">
@@ -209,13 +218,13 @@ elif app_mode == "Client: Sign Form":
     </div>
     <h3>CLIENT INFORMATION</h3>
     <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td>
-        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td>
-        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td>
-        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
-        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
-        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
-     </table>
+        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td></tr>
+        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td></tr>
+    </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
     <p><strong>Date signed:</strong> {date.today().strftime('%B %d, %Y')}</p>
@@ -223,46 +232,46 @@ elif app_mode == "Client: Sign Form":
     <p style="text-align: center; color: gray;">This document was generated electronically.</p>
 </body>
 </html>"""
-                    
-                    # --- Create email ---
-                    subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
-                    body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}\n\nA signed HTML agreement is attached."
-                    
-                    msg = MIMEMultipart()
-                    msg['From'] = sender_email
-                    msg['To'] = office["target_email"]
-                    msg['Subject'] = subject
-                    
-                    # Attach body text
-                    msg.attach(MIMEText(body, 'plain'))
-                    
-                    # Attach the agreement as an HTML file
-                    attachment = MIMEText(html_content, 'html')
-                    attachment.add_header(
-                        'Content-Disposition',
-                        'attachment',
-                        filename=f"signed_agreement_{c_name.replace(' ', '_')}.html"
-                    )
-                    msg.attach(attachment)
-                    
-                    # Send email
-                    server = smtplib.SMTP('smtp.gmail.com', 587)
-                    server.starttls()
-                    server.login(sender_email, sender_password)
-                    server.send_message(msg)
-                    server.quit()
-                    
-                    st.success(f"Sent successfully to {office['full_name']}. An HTML copy of the signed agreement is attached.")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-        else:
-            missing = []
-            if not signature:
-                missing.append("signature")
-            if not c_name:
-                missing.append("full name")
-            if not c_phone:
-                missing.append("phone number")
-            if not agree:
-                missing.append("agreement checkbox")
-            st.error(f"Missing required fields: {', '.join(missing)}.")
+                        
+                        # --- Create email ---
+                        subject = f"NEW SIGNED REQUEST: {c_name} - {office['full_name']}"
+                        body = f"Office: {office['full_name']}\nClient: {c_name}\nPhone: {c_phone}\nEmail: {c_email}\nAccident Date: {c_date_acc}\nDOB: {c_dob}\nSSN: {c_ssn}\n\nA signed HTML agreement is attached."
+                        
+                        msg = MIMEMultipart()
+                        msg['From'] = sender_email
+                        msg['To'] = office["target_email"]
+                        msg['Subject'] = subject
+                        
+                        # Attach body text
+                        msg.attach(MIMEText(body, 'plain'))
+                        
+                        # Attach the agreement as an HTML file
+                        attachment = MIMEText(html_content, 'html')
+                        attachment.add_header(
+                            'Content-Disposition',
+                            'attachment',
+                            filename=f"signed_agreement_{c_name.replace(' ', '_')}.html"
+                        )
+                        msg.attach(attachment)
+                        
+                        # Send email
+                        server = smtplib.SMTP('smtp.gmail.com', 587)
+                        server.starttls()
+                        server.login(sender_email, sender_password)
+                        server.send_message(msg)
+                        server.quit()
+                        
+                        st.success(f"Sent successfully to {office['full_name']}. An HTML copy of the signed agreement is attached.")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+            else:
+                missing = []
+                if not signature:
+                    missing.append("signature")
+                if not c_name:
+                    missing.append("full name")
+                if not c_phone:
+                    missing.append("phone number")
+                if not agree:
+                    missing.append("agreement checkbox")
+                st.error(f"Missing required fields: {', '.join(missing)}.")
