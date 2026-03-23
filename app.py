@@ -57,19 +57,19 @@ By signing below, the Client agrees to the terms and conditions of this contract
     },
     "mckenzie": {
         "full_name": "Mckenzie & Snyder Legal Representation",
-        "fee_text": """**CONTINGENT FEE AGREEMENT**
+        "fee_text": """**Intake Team Transfer Protocol**
 
-This agreement is voluntarily entered between the undersigned (Client) and McKenzie & Snyder LLP (Lawyer).
+**Primary Contact Method:**
+For all live transfers, connect directly to the Intake Team at:
+**1.513.788.4699**
 
-Client retains Lawyer to recover damages sustained in an accident on the date provided below.
+**Staffing & Availability**
 
-In consideration of legal services, Client agrees to pay Lawyer **25% of the gross amount recovered**, whether by settlement or trial.
-
-Lawyer accepts employment and will do all acts necessary to protect Client's rights.
-
-If nothing is recovered, Lawyer receives no compensation. However, Client is obligated to pay all reasonable expenses that Client authorizes or that Lawyer deems necessary to advance the claim. Client authorizes Lawyer to deduct medical bills from the gross settlement, so that Lawyer may pay such bills on behalf of Client.
-
-The undersigned certify that they have read and understand this agreement.""",
+| Name   | Schedule       | Shift Hours       |
+|--------|----------------|-------------------|
+| Vee    | Monday – Friday| 9:00 AM – 5:00 PM |
+| Liam   | Monday – Friday| 9:00 AM – 5:00 PM |
+| Conney | Wednesday – Sunday | 9:00 AM – 8:00 PM |""",
         "needs_extra": True,
         "target_email": "tgottardi@advanced-spinal-care.com",
         "color": "#a3f2b5"
@@ -209,13 +209,13 @@ elif app_mode == "Client: Sign Form":
     </div>
     <h3>CLIENT INFORMATION</h3>
     <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td>
-        <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td>
-        <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td>
-        <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
-        <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
-        <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
-     </table>
+         <tr><td style="padding: 6px;"><strong>Full Name:</strong></td><td>{c_name}</td></tr>
+         <tr><td style="padding: 6px;"><strong>Accident Date:</strong></td><td>{c_date_acc}</td></tr>
+         <tr><td style="padding: 6px;"><strong>Phone:</strong></td><td>{c_phone}</td></tr>
+         <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td></tr>
+         <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td></tr>
+         <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td></tr>
+    </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
     <p><strong>Date signed:</strong> {date.today().strftime('%B %d, %Y')}</p>
