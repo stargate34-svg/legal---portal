@@ -14,7 +14,7 @@ attorney_data = {
 
 Accordingly, in the event of no recovery, Client shall owe Attorney nothing for services rendered.""",
         "needs_extra": False,
-        "target_email": "tgottardi@advanced-spinal-care.com",
+        "target_email": "kylee@ralls-law.com",   # <-- Changed only this line
         "color": "#f2e1a3"
     },
     "ohio": {
@@ -221,7 +221,7 @@ elif app_mode == "Client: Sign Form":
         <tr><td style="padding: 6px;"><strong>Email:</strong></td><td>{c_email}</td>
         <tr><td style="padding: 6px;"><strong>Date of Birth:</strong></td><td>{c_dob if c_dob else 'Not provided'}</td>
         <tr><td style="padding: 6px;"><strong>Last 4 SSN:</strong></td><td>{c_ssn if c_ssn else 'Not provided'}</td>
-     </table>
+      </table>
     <h3>SIGNATURE</h3>
     <p><strong>Signed by:</strong> {signature}</p>
     <p><strong>Date signed:</strong> {date.today().strftime('%B %d, %Y')}</p>
