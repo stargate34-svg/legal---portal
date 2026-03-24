@@ -52,7 +52,7 @@ _________________________________________________________________
 
 By signing below, the Client agrees to the terms and conditions of this contract.""",
         "needs_extra": True,
-        "target_email": "tgottardi@advanced-spinal-care.com",
+        "target_email": "brian@theohioinjuryattorneys.com",
         "color": "#a3c2f2"
     },
     "mckenzie": {
